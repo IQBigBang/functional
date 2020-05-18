@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Functional.types;
 
@@ -33,15 +34,16 @@ namespace Functional.parser.patterns
             return string.Join(" && ", Tests);
         }
 
-        public System.Collections.Immutable.ImmutableList<(string, AstType)> GetBindingsTypes(System.Collections.Immutable.ImmutableList<(string, AstType)> bindings)
-            => Members.Aggregate(bindings, (bind, patt) => patt.GetBindingsTypes(bind));
-
-        public System.Collections.Immutable.ImmutableList<(string, string)> GetBindings(System.Collections.Immutable.ImmutableList<(string, string)> bindings, string baseName)
+        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
         {
-            var Bindings = bindings;
+            foreach (var patt in Members)
+                patt.GetBindingsTypes(ref bindings);
+        }
+
+        public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
+        {
             for (int i = 0; i < Members.Length; i++)
-                Bindings = Members[i].GetBindings(Bindings, baseName + "->_" + i);
-            return Bindings;
+                Members[i].GetBindings(ref bindings, baseName + "->_" + i);
         }
     }
 }

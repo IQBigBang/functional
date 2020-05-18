@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Functional.types;
 
 namespace Functional.parser.patterns
@@ -18,10 +19,12 @@ namespace Functional.parser.patterns
         public string CompileTest(string baseName)
             => baseName + " == " + value;
 
-        public System.Collections.Immutable.ImmutableList<(string, AstType)> GetBindingsTypes(System.Collections.Immutable.ImmutableList<(string, AstType)> bindings)
-            => bindings;
+        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        {
+        }
 
-        public System.Collections.Immutable.ImmutableList<(string, string)> GetBindings(System.Collections.Immutable.ImmutableList<(string, string)> bindings, string baseName)
-            => bindings;
+        public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
+        {
+        }
     }
 }

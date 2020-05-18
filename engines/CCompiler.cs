@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Functional.ast;
@@ -121,9 +120,7 @@ namespace Functional.engines
 
                 for (int i = 0; i < overload.Item1.Length; i++)
                 {
-                    overload.Item1[i]
-                        .GetBindings(ImmutableList.Create<(string, string)>(), "_" + i)
-                        .ForEach((x) => CurrentFunctionSymbols.Add(x.Item1, x.Item2));
+                    overload.Item1[i].GetBindings(ref CurrentFunctionSymbols, "_" + i);
                 }
 
                 // Then insert pattern tests
@@ -195,8 +192,7 @@ namespace Functional.engines
                 Output.WriteLine("{0} {1} = {2};", val.NodeType.GetCName(), variableName, value);
 
                 // Resolve bindings
-                patt.GetBindings(ImmutableList.Create<(string, string)>(), variableName)
-                    .ForEach((x) => CurrentFunctionSymbols.Add(x.Item1, x.Item2));
+                patt.GetBindings(ref CurrentFunctionSymbols, variableName);
             }
             return "";
         }

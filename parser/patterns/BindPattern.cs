@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Functional.types;
 
 namespace Functional.parser.patterns
@@ -23,14 +24,14 @@ namespace Functional.parser.patterns
         public string CompileTest(string baseName)
             => "true"; // BindPattern matches everything
 
-        public System.Collections.Immutable.ImmutableList<(string, AstType)> GetBindingsTypes(System.Collections.Immutable.ImmutableList<(string, AstType)> bindings)
+        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
         {
-            return bindings.Add((bindname, patternType));
+            bindings.Add(bindname, patternType);
         }
 
-        public System.Collections.Immutable.ImmutableList<(string, string)> GetBindings(System.Collections.Immutable.ImmutableList<(string, string)> bindings, string baseName)
+        public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
         {
-            return bindings.Add((bindname, baseName));
+            bindings.Add(bindname, baseName);
         }
     }
 }

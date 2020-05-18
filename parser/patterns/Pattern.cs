@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using Functional.types;
 
 namespace Functional.parser.patterns
@@ -26,14 +26,14 @@ namespace Functional.parser.patterns
         /// Gets all the binded arguments from the pattern (and its subpatterns)
         /// </summary>
         /// <returns>The bindings in form (bindName, bindType)</returns>
-        ImmutableList<(string, AstType)> GetBindingsTypes(ImmutableList<(string, AstType)> bindings);
+        void GetBindingsTypes(ref Dictionary<string, AstType> bindings);
 
         /// <summary>
         /// Gets all the binded arguments from the pattern (and its subpatterns)
         /// </summary>
         /// <returns>The bindings in form (bindName, cCode)</returns>
         /// <param name="baseName">The name that can be used to access the value the pattern matches against</param>
-        ImmutableList<(string, string)> GetBindings(ImmutableList<(string, string)> bindings, string baseName);
+        void GetBindings(ref Dictionary<string, string> bindings, string baseName);
     }
 }
 

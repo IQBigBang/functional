@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Functional.types;
 
@@ -35,10 +36,14 @@ namespace Functional.parser.patterns
                 variant.Item1 == VariantName && InnerValue.MatchesType(variant.Item2));
         }
 
-        public System.Collections.Immutable.ImmutableList<(string, AstType)> GetBindingsTypes(System.Collections.Immutable.ImmutableList<(string, AstType)> bindings)
-            => InnerValue.GetBindingsTypes(bindings);
+        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        {
+            InnerValue.GetBindingsTypes(ref bindings);
+        }
 
-        public System.Collections.Immutable.ImmutableList<(string, string)> GetBindings(System.Collections.Immutable.ImmutableList<(string, string)> bindings, string baseName)
-            => InnerValue.GetBindings(bindings, baseName + "->as." + VariantName);
+        public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
+        {
+            InnerValue.GetBindings(ref bindings, baseName + "->as." + VariantName);
+        }
     }
 }

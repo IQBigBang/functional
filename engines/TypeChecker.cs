@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Functional.ast;
 using Functional.debug;
@@ -178,8 +177,7 @@ namespace Functional.engines
 
                 foreach (var pat in overload.Item1)
                 {
-                    pat.GetBindingsTypes(ImmutableList.Create<(string, AstType)>())
-                        .ForEach((x) => CurrentFunctionSymbols.Add(x.Item1, x.Item2));
+                    pat.GetBindingsTypes(ref CurrentFunctionSymbols);
                 }
 
                 // resolve the 'where' clause
@@ -252,8 +250,7 @@ namespace Functional.engines
                         value.NodeType);
 
                 // Then add bindings
-                patt.GetBindingsTypes(ImmutableList.Create<(string, AstType)>())
-                    .ForEach((x) => CurrentFunctionSymbols.Add(x.Item1, x.Item2));
+                patt.GetBindingsTypes(ref CurrentFunctionSymbols);
             }
         }
     }

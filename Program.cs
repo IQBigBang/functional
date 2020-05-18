@@ -28,7 +28,7 @@ namespace Functional
             [Option('b', "builddir", Required = true)]
             public string BuildDir { get; set; }
 
-            [Option('i', "imports", Default = "", Required = false)]
+            [Option('i', "imports", Required = true)]
             public string Imports { get; set; }
         }
 

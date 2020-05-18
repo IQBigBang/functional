@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Threading;
 using Functional.ast;
-using Pastel;
 
 namespace Functional.debug
 {
@@ -15,42 +14,39 @@ namespace Functional.debug
 
         public static void Error(string format, string FileAndLine, params object[] args)
         {
-            Console.WriteLine(string.Format("{0}: {1}: {2}",
-                FileAndLine, "error".Pastel(Color.Red), string.Format(format, args).Bold()).Bold());
+            Console.WriteLine(string.Format("\u001b[1m{0}: \u001b[31merror\u001b[0m\u001b[1m: {1}\u001b[0m",
+                FileAndLine, string.Format(format, args)));
             if (ThrowExceptions) throw new Exception();
             Environment.Exit(1);
         }
 
         public static void Warning(string format, string FileAndLine, params object[] args)
         {
-            Console.WriteLine(string.Format("{0}: {1}: {2}",
-                FileAndLine, "warning".Pastel(Color.Yellow), string.Format(format, args).Bold()).Bold());
+            Console.WriteLine(string.Format("\u001b[1m{0}: \u001b[33warning\u001b[0m\u001b[1m: {1}\u001b[0m",
+                FileAndLine, string.Format(format, args)));
         }
 
         public static void Note(string format, string FileAndLine, params object[] args)
         {
-            Console.WriteLine(string.Format("{0}: {1}: {2}",
-                FileAndLine, "note".Pastel(Color.SkyBlue), string.Format(format, args).Bold()).Bold());
+            Console.WriteLine(string.Format("\u001b[1m{0}: \u001b[34;1mnote\u001b[0m\u001b[1m: {1}\u001b[0m",
+                FileAndLine, string.Format(format, args)));
         }
 
         public static void Error(string format, params object[] args)
         {
-            Console.WriteLine(string.Format("{0}: {1}",
-                "error".Pastel(Color.Red), string.Format(format, args).Bold()).Bold());
+            Console.WriteLine(string.Format("\u001b[1m\u001b[31merror\u001b[0m\u001b[1m: {0}\u001b[0m", string.Format(format, args)));
             if (ThrowExceptions) throw new Exception();
             Environment.Exit(1);
         }
 
         public static void Warning(string format, params object[] args)
         {
-            Console.WriteLine(string.Format("{0}: {1}",
-                "warning".Pastel(Color.Yellow), string.Format(format, args).Bold()).Bold());
+            Console.WriteLine(string.Format("\u001b[1m\u001b[33warning\u001b[0m\u001b[1m: {0}\u001b[0m", string.Format(format, args)));
         }
 
         public static void Note(string format, params object[] args)
         {
-            Console.WriteLine(string.Format("{0}: {1}",
-                "note".Pastel(Color.SkyBlue), string.Format(format, args).Bold()).Bold());
+            Console.WriteLine(string.Format("\u001b[1m\u001b[34;1mnote\u001b[0m\u001b[1m: {0}\u001b[0m", string.Format(format, args)));
         }
     }
 }

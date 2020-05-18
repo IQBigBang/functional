@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Functional.types;
 
@@ -36,25 +37,6 @@ namespace Functional.parser.patterns
             return "list_has_n(" + baseName + ", " + ElementPatterns.Length + ") && " + ElementTests;
         }
 
-        public System.Collections.Immutable.ImmutableList<(string, string)> GetBindings(System.Collections.Immutable.ImmutableList<(string, string)> bindings, string baseName)
-        {
-            if (isEmpty) return bindings;
-            var binds = ElementPatterns[0].GetBindings(bindings, "list_head(" + baseName + ")"); 
-            for (int i = 1; i < ElementPatterns.Length; i++)
-                binds = ElementPatterns[i].GetBindings(binds, "list_at(" + baseName + ", " + i + ")");
-
-            if (ElementPatterns.Length == 1)
-                return TailPattern.GetBindings(binds, "list_tail(" + baseName + ")");
-            return TailPattern.GetBindings(binds, "list_tail_at(" + baseName + ", " + ElementPatterns.Length + ")");
-        }
-
-        public System.Collections.Immutable.ImmutableList<(string, AstType)> GetBindingsTypes(System.Collections.Immutable.ImmutableList<(string, AstType)> bindings)
-        {
-            if (isEmpty) return bindings;
-            return TailPattern.GetBindingsTypes(
-                ElementPatterns.Aggregate(bindings, (binds, pat) => pat.GetBindingsTypes(binds)));
-        }
-
         public bool MatchesType(AstType type)
         {
             if (!type.Is<ListType>()) return false;
@@ -66,6 +48,28 @@ namespace Functional.parser.patterns
                 .Select((x) => x.MatchesType(ltype.ListElementsType))
                 .Aggregate(true, (b1, b2) => b1 && b2)
                 && TailPattern.MatchesType(ltype);
-        } 
+        }
+
+        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        {
+            if (isEmpty) return;
+            foreach (var patt in ElementPatterns)
+                patt.GetBindingsTypes(ref bindings);
+            TailPattern.GetBindingsTypes(ref bindings);
+        }
+
+        public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
+        {
+            if (isEmpty) return;
+
+            ElementPatterns[0].GetBindings(ref bindings, "list_head(" + baseName + ")");
+            for (int i = 1; i < ElementPatterns.Length; i++)
+                ElementPatterns[i].GetBindings(ref bindings, "list_at(" + baseName + ", " + i + ")");
+
+            if (ElementPatterns.Length == 1)
+                TailPattern.GetBindings(ref bindings, "list_tail(" + baseName + ")");
+            else
+                TailPattern.GetBindings(ref bindings, "list_tail_at(" + baseName + ", " + ElementPatterns.Length + ")");
+        }
     }
 }
