@@ -438,4 +438,15 @@ extern void GC_collect(void) __attribute__((__noinline__));
 extern char *GC_strdup(const char *str);
 #define gc_strdup           GC_strdup
 
+
+/* ADDED BY THE AUTHORS OF FUNCTIONAL for linking the garbage collector */
+
+void* alloc(size_t size) {
+    return gc_malloc(size);
+}
+
+void* alloc_atomic(size_t size) {
+    return gc_malloc(size);
+}
+
 #endif      /* __GC_H */
