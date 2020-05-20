@@ -4,16 +4,15 @@
 
 /* MEMORY */
 
-// Defined by the BDWGC
+/* Defined by the GC */
 extern void* GC_malloc(size_t len);
-extern void* GC_malloc_atomic(size_t  len);
 
 void* alloc(size_t len) {
 	return GC_malloc(len);
 }
 
 void* alloc_atomic(size_t len) {
-        return GC_malloc_atomic(len);
+    return GC_malloc(len); /* Once we support BDWGC, we can also properly support alloc_atomic */
 }
 
 void mem_copy(void* from, void* to, size_t len) {

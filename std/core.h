@@ -2,7 +2,7 @@
 #define FUNCTIONAL_CORE_LIB
 #include <stddef.h>
 
-// std.core library - implicitly imported and linked in
+/* std.core library - implicitly imported and linked in */
 
 /* Core library types */
 
