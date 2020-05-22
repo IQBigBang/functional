@@ -16,6 +16,8 @@ namespace Functional.parser.patterns
         // matches only against integers
         public bool MatchesType(AstType type) => type.Is<IntType>();
 
+        public void SetType(AstType type) { }
+
         public string CompileTest(string baseName)
             => baseName + " == " + value;
 

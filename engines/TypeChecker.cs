@@ -170,6 +170,8 @@ namespace Functional.engines
                 {
                     if (!overload.Item1[i].MatchesType(node.NodeType.As<FunctionType>().InnerTypes[i]))
                         overload.Item2.ReportError("This pattern cannot be used for type {0}", node.NodeType.As<FunctionType>().InnerTypes[i]);
+
+                    overload.Item1[i].SetType(node.NodeType.As<FunctionType>().InnerTypes[i]);
                 }
 
                 // find the binded arguments
@@ -248,6 +250,8 @@ namespace Functional.engines
                 if (!patt.MatchesType(value.NodeType))
                     value.ReportError("This pattern cannot be used for type {0}", 
                         value.NodeType);
+
+                patt.SetType(value.NodeType);
 
                 // Then add bindings
                 patt.GetBindingsTypes(ref CurrentFunctionSymbols);

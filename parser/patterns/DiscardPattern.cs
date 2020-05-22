@@ -19,8 +19,8 @@ namespace Functional.parser.patterns
         }
 
         public bool MatchesType(AstType type)
-        {
-            return true;
-        }
+            => true;
+
+        public void SetType(AstType type) { }
     }
 }

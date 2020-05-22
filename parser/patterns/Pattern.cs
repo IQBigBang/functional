@@ -23,6 +23,13 @@ namespace Functional.parser.patterns
         bool MatchesType(AstType type);
 
         /// <summary>
+        /// Sets the internal type of the pattern (if the pattern requires its type)
+        /// The type is expected to be a valid option for this pattern (it should be checked by MatchesType first)
+        /// </summary>
+        /// <param name="type">The type of the pattern</param>
+        void SetType(AstType type);
+
+        /// <summary>
         /// Gets all the binded arguments from the pattern (and its subpatterns)
         /// </summary>
         /// <returns>The bindings in form (bindName, bindType)</returns>

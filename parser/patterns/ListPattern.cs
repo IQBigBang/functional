@@ -50,6 +50,8 @@ namespace Functional.parser.patterns
                 && TailPattern.MatchesType(ltype);
         }
 
+        public void SetType(AstType type) { }
+
         public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
         {
             if (isEmpty) return;

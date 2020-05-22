@@ -31,10 +31,12 @@ namespace Functional.parser.patterns
             if (!type.Is<OrType>()) return false;
             var ortype = type.As<OrType>();
 
-            patType = type;
             return ortype.Variants.Any((variant) =>
                 variant.Item1 == VariantName && InnerValue.MatchesType(variant.Item2));
         }
+
+        public void SetType(AstType type)
+            => patType = type;
 
         public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
         {

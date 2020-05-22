@@ -20,11 +20,13 @@ namespace Functional.parser.patterns
             if (!asttype.Is<AndType>()) return false;
             AndType type = asttype.As<AndType>();
 
-            patType = type;
             return (type.Members.Length == Members.Length)
                 && type.Members.Zip(Members, (t, pat) => pat.MatchesType(t))
                                .Aggregate(true, (b1, b2) => b1 && b2);
         }
+
+        public void SetType(AstType type)
+            => patType = type;
 
         public string CompileTest(string baseName)
         {

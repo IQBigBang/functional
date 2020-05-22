@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace Functional.types
 {
     public abstract class AstType
-    {
+    { 
+
         public abstract void ResolveNamedTypes(Dictionary<string, AstType> aliases);
         public abstract string GetCName();
         public abstract string GetMangledName();

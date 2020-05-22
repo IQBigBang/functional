@@ -16,10 +16,10 @@ namespace Functional.parser.patterns
 
         // matches any type
         public bool MatchesType(AstType type)
-        {
-            patternType = type;
-            return true;
-        }
+            => true;
+
+        public void SetType(AstType type)
+            => patternType = type;
 
         public string CompileTest(string baseName)
             => "true"; // BindPattern matches everything
