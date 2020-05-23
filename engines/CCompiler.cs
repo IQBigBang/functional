@@ -60,10 +60,10 @@ namespace Functional.engines
         public override string VisitTypeDefinition(TypeDefinitionNode node)
         {
             // If AndType add the type constructor to GlobalFunctions
-            if (node.NodeType is AndType)
+            if (node.ActualType is AndType)
                 GlobalFunctions.Add(node.Name, node.Name);
             // If OrType add the variant constructors to GlobalFunctions
-            if (node.NodeType is OrType otype)
+            if (node.ActualType is OrType otype)
                 Array.ForEach(otype.Variants, (v) =>
                     GlobalFunctions.Add(v.Item1, node.Name + "_" + v.Item1));
 
@@ -74,7 +74,7 @@ namespace Functional.engines
         {
             if (node.Op == ":")
                 return string.Format("list_cons({0}, {1})", Visit(node.Lhs), Visit(node.Rhs));
-            if (node.Op == "+" && node.Lhs.NodeType.Is<StringType>())
+            if (node.Op == "+" && node.Lhs.NodeType.Type.Is<StringType>())
                 return string.Format("string_concat({0}, {1})", Visit(node.Lhs), Visit(node.Rhs));
             // As of right now, integer operations (expect for ':') are supported. (checked by TypeChecker)
             return string.Format("({0}) {1} ({2})", Visit(node.Lhs), node.Op, Visit(node.Rhs));
@@ -88,13 +88,13 @@ namespace Functional.engines
 
         public override string VisitConstant(ConstantNode node)
         {
-            if (node.NodeType.Is<IntType>())
+            if (node.NodeType.Type.Is<IntType>())
                 return string.Format("{0}", (int)node.Value);
-            if (node.NodeType.Is<BoolType>())
+            if (node.NodeType.Type.Is<BoolType>())
                 return string.Format("{0}", (bool)node.Value);
-            if (node.NodeType.Is<NilType>())
+            if (node.NodeType.Type.Is<NilType>())
                 return "nil";
-            if (node.NodeType.Is<StringType>())
+            if (node.NodeType.Type.Is<StringType>())
                 return string.Format("string_new_literal({0}, {1})",
                     (string)node.Value, ((string)node.Value).Length - 2);
 

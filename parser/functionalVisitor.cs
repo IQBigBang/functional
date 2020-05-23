@@ -149,13 +149,6 @@ public interface IfunctionalVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitNamedDefinitionsimpletypename([NotNull] functionalParser.NamedDefinitionsimpletypenameContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>DefinitiontypenameDefinitionsimpletypename</c>
-	/// labeled alternative in <see cref="functionalParser.definitionsimpletypename"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDefinitiontypenameDefinitionsimpletypename([NotNull] functionalParser.DefinitiontypenameDefinitionsimpletypenameContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>FuncDefStmt</c>
 	/// labeled alternative in <see cref="functionalParser.stmt"/>.
 	/// </summary>

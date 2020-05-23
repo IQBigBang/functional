@@ -7,12 +7,10 @@ namespace Functional.debug
 {
     public static class ErrorReporter
     {
-        public static string Bold(this string s)
-            => "\u001b[1m" + s + "\u001b[0m";
-
         public static bool ThrowExceptions = false;
 
-        public static void Error(string format, string FileAndLine, params object[] args)
+        // FL = File and Line
+        public static void ErrorFL(string format, string FileAndLine, params object[] args)
         {
             Console.WriteLine(string.Format("\u001b[1m{0}: \u001b[31merror\u001b[0m\u001b[1m: {1}\u001b[0m",
                 FileAndLine, string.Format(format, args)));
@@ -20,13 +18,13 @@ namespace Functional.debug
             Environment.Exit(1);
         }
 
-        public static void Warning(string format, string FileAndLine, params object[] args)
+        public static void WarningFL(string format, string FileAndLine, params object[] args)
         {
             Console.WriteLine(string.Format("\u001b[1m{0}: \u001b[33warning\u001b[0m\u001b[1m: {1}\u001b[0m",
                 FileAndLine, string.Format(format, args)));
         }
 
-        public static void Note(string format, string FileAndLine, params object[] args)
+        public static void NoteFL(string format, string FileAndLine, params object[] args)
         {
             Console.WriteLine(string.Format("\u001b[1m{0}: \u001b[34;1mnote\u001b[0m\u001b[1m: {1}\u001b[0m",
                 FileAndLine, string.Format(format, args)));

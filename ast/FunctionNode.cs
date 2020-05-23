@@ -13,28 +13,30 @@ namespace Functional.ast
         public bool IsExternal { get; }
         public (Pattern[], Node, WhereClauseNode)[] Overloads { get; }
 
-        public FunctionNode(string name, AstType predicate, string fileAndLine) : base(fileAndLine)
+        public FunctionType Predicate;
+
+        public FunctionNode(string name, FunctionType predicate, string fileAndLine) : base(fileAndLine)
         {
             Name = name;
             IsExternal = true;
             Overloads = null;
-            NodeType = predicate;
+            Predicate = predicate;
         }
 
-        public FunctionNode(string name, (Pattern[], Node, WhereClauseNode)[] overloads, AstType predicate, string fileAndLine) : base(fileAndLine)
+        public FunctionNode(string name, (Pattern[], Node, WhereClauseNode)[] overloads, FunctionType predicate, string fileAndLine) : base(fileAndLine)
         {
             Name = name;
             IsExternal = false;
             Overloads = overloads;
-            NodeType = predicate;
+            Predicate = predicate;
         }
 
         public string GetMangledName()
         {
             var s = "_M" + Name;
             // Skip the last type = return type
-            for (int i = 0; i < NodeType.As<FunctionType>().InnerTypes.Length - 1; i++)
-                s += "_" + NodeType.As<FunctionType>().InnerTypes[i].GetMangledName() + i;
+            for (int i = 0; i < Predicate.InnerTypes.Length - 1; i++)
+                s += "_" + Predicate.InnerTypes[i].GetMangledName() + i;
             return s;
         }
 

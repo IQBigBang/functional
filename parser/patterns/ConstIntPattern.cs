@@ -14,14 +14,14 @@ namespace Functional.parser.patterns
         }
 
         // matches only against integers
-        public bool MatchesType(AstType type) => type.Is<IntType>();
+        public bool MatchesType(Ty type) => type.Type.Is<IntType>();
 
-        public void SetType(AstType type) { }
+        public void SetType(Ty type) { }
 
         public string CompileTest(string baseName)
             => baseName + " == " + value;
 
-        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
         }
 

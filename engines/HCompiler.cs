@@ -31,8 +31,8 @@ namespace Functional.engines
                 output.Write("int main()");
                 return;
             }
-
-            var innerTypes = (node.NodeType as FunctionType).InnerTypes;
+            
+            var innerTypes = node.Predicate.InnerTypes;
             output.Write("{0} {1}(", innerTypes.Last().GetCName(), node.GetMangledName());
             for (int i = 0; i < innerTypes.Length - 1; i++)
             {
@@ -42,12 +42,11 @@ namespace Functional.engines
             output.Write(")");
         }
 
-        private void GenerateStructDefinition(AstType type)
+        private void GenerateStructDefinition(Ty type)
         {
-            if (type is null) return;
-            if (type.Is<FunctionType>())
+            if (type.Type.Is<FunctionType>())
             {
-                var ftype = type.As<FunctionType>();
+                var ftype = type.Type.As<FunctionType>();
                 // Note that function types may or may not be used
                 if (Generated.Contains(ftype.GetCName()))
                     return;
@@ -68,6 +67,9 @@ namespace Functional.engines
 
         public void VisitAll((List<FunctionNode>, List<TypeDefinitionNode>) nodes)
         {
+            // Generate typedefs, in case of self-recursive types
+            nodes.Item2.ForEach((tp) =>
+                Output.WriteLine("typedef struct _Struct{0}_t {0}_t;", tp.Name));
             nodes.Item2.ForEach(Visit);
             nodes.Item1.ForEach(Visit);
         }
@@ -75,7 +77,7 @@ namespace Functional.engines
         // We check types of all nodes
         public new void Visit(Node node)
         {
-            if (!(node is FunctionNode))
+            if (!(node is FunctionNode) && !(node.NodeType is null))
                 GenerateStructDefinition(node.NodeType);
             node.Accept(this);
         }
@@ -120,13 +122,13 @@ namespace Functional.engines
 
         public override void VisitTypeDefinition(TypeDefinitionNode node)
         {
-            if (node.NodeType is AndType atype)
+            if (node.ActualType is AndType atype)
             {
                 if (Generated.Contains(node.Name))
                     return;
 
                 // Generate typedef struct
-                Output.WriteLine("typedef struct {");
+                Output.WriteLine("typedef struct _Struct{0}_t {{", node.Name);
                 for (int i = 0; i < atype.Members.Length; i++)
                     Output.WriteLine("{0} _{1};", atype.Members[i].GetCName(), i);
                 Output.WriteLine("}} {0}_t;", node.Name);
@@ -147,13 +149,13 @@ namespace Functional.engines
 
                 Generated.Add(node.Name);
 
-            } else if (node.NodeType is OrType otype)
+            } else if (node.ActualType is OrType otype)
             {
                 if (Generated.Contains(node.Name))
                     return;
 
                 // Generate typedef struct (tagged union)
-                Output.WriteLine("typedef struct {");
+                Output.WriteLine("typedef struct _Struct{0}_t {{", node.Name);
                 Output.WriteLine("int tag;");
                 Output.WriteLine("union {");
                 Array.ForEach(otype.Variants, (x) =>

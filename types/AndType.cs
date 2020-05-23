@@ -6,9 +6,9 @@ namespace Functional.types
 {
     public class AndType : AstType
     {
-        public AstType[] Members { get; }
+        public Ty[] Members { get; }
 
-        public AndType(AstType[] members)
+        public AndType(Ty[] members)
         {
             Members = members;
         }
@@ -28,8 +28,5 @@ namespace Functional.types
         {
             return "(" + string.Join(" & ", Members.Select((x) => x.ToString())) + ")";
         }
-
-        public override void ResolveNamedTypes(Dictionary<string, AstType> aliases)
-            => Array.ForEach(Members, (x) => x.ResolveNamedTypes(aliases));
     }
 }

@@ -6,7 +6,6 @@ namespace Functional.parser.patterns
 {
     public class DiscardPattern : Pattern
     {
-
         public string CompileTest(string baseName)
             => "true"; // matches anything
 
@@ -14,13 +13,13 @@ namespace Functional.parser.patterns
         {
         }
 
-        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
         }
 
-        public bool MatchesType(AstType type)
+        public bool MatchesType(Ty type)
             => true;
 
-        public void SetType(AstType type) { }
+        public void SetType(Ty type) { }
     }
 }

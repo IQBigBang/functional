@@ -5,9 +5,9 @@ namespace Functional.types
 {
     public class ListType : AstType
     {
-        public AstType ListElementsType { get; }
+        public Ty ListElementsType { get; }
 
-        public ListType(AstType listElementsType)
+        public ListType(Ty listElementsType)
         {
             ListElementsType = listElementsType;
         }
@@ -16,13 +16,10 @@ namespace Functional.types
             => "list_t*";
 
         public override string GetMangledName()
-            => "L";
+            => "L_" + ListElementsType.GetMangledName();
 
         public override string ToString()
             => "List " + ListElementsType;
-
-        public override void ResolveNamedTypes(Dictionary<string, AstType> aliases)
-            => ListElementsType.ResolveNamedTypes(aliases);
 
         public bool Equals(ListType lt)
             => ListElementsType == lt.ListElementsType;

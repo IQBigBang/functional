@@ -7,9 +7,9 @@ namespace Functional.types
     public class FunctionType : AstType
     {
         // The last element = return type, before it are arguments
-        public AstType[] InnerTypes { get; }
+        public Ty[] InnerTypes { get; }
 
-        public FunctionType(AstType[] innerTypes)
+        public FunctionType(Ty[] innerTypes)
         {
             InnerTypes = innerTypes;
         }
@@ -22,6 +22,7 @@ namespace Functional.types
             var s = "F";
             for (int i = 0; i < InnerTypes.Length - 1; i++)
                 s += "_" + InnerTypes[i].GetMangledName() + i;
+            s += "_" + InnerTypes.Last().GetMangledName();
             return s;
         }
 
@@ -33,8 +34,5 @@ namespace Functional.types
         {
             return string.Join(" -> ", InnerTypes.Select((x) => x.ToString()));
         }
-
-        public override void ResolveNamedTypes(Dictionary<string, AstType> aliases)
-            => Array.ForEach(InnerTypes, (x) => x.ResolveNamedTypes(aliases));
     }
 }

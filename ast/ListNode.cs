@@ -7,9 +7,9 @@ namespace Functional.ast
     {
         public Node[] Elements { get; }
         // Warning: TypeHint may be null
-        public AstType TypeHint { get; }
+        public Ty? TypeHint { get; }
 
-        public ListNode(Node[] elements, AstType typeHint, string fileAndLine) : base(fileAndLine)
+        public ListNode(Node[] elements, Ty? typeHint, string fileAndLine) : base(fileAndLine)
         {
             Elements = elements;
             TypeHint = typeHint;

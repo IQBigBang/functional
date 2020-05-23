@@ -4,13 +4,10 @@ using Antlr4.Runtime;
 using Functional.parser;
 using Functional.engines;
 using System.IO;
-using System.Diagnostics;
 using Functional.ast;
-using System.Linq;
-using Functional.types;
 using Functional.debug;
-using System.Threading;
 using CommandLine;
+using Functional.types;
 
 namespace Functional
 {
@@ -46,14 +43,17 @@ namespace Functional
             var AllFunctions = new List<FunctionNode>();
             var AllTypes = new List<TypeDefinitionNode>();
 
+            var GlobalTypeTable = new TypeTable();
+
             foreach (var v in args.Files)
             {
-                var (fs, ts) = BuildAST(Parse(v));
+                var (fs, ts) = BuildAST(Parse(v), ref GlobalTypeTable);
                 AllFunctions.AddRange(fs);
                 AllTypes.AddRange(ts);
             }
             
-            TypeCheck((AllFunctions, AllTypes));
+            TypeCheck((AllFunctions, AllTypes), ref GlobalTypeTable);
+            
             Optimize(AllFunctions);
 
             using (var h_output = new StreamWriter(File.Open(Path.Combine(args.BuildDir, args.Module + ".h"), FileMode.Create, FileAccess.ReadWrite)))
@@ -96,15 +96,15 @@ namespace Functional
             return new functionalParser(commonTokenStream);
         }
 
-        public static (List<FunctionNode>, List<TypeDefinitionNode>) BuildAST(functionalParser p)
+        public static (List<FunctionNode>, List<TypeDefinitionNode>) BuildAST(functionalParser p, ref TypeTable tt)
         {
-            functionalBaseVisitorImpl visitor = new functionalBaseVisitorImpl("main.f");
+            functionalBaseVisitorImpl visitor = new functionalBaseVisitorImpl("main.f", ref tt);
             return visitor.VisitProgram(p.program());
         }
 
-        public static void TypeCheck((List<FunctionNode>, List<TypeDefinitionNode>) definitions)
+        public static void TypeCheck((List<FunctionNode>, List<TypeDefinitionNode>) definitions, ref TypeTable tt)
         {
-            new TypeChecker().CheckAll(definitions);
+            new TypeChecker().CheckAll(definitions, ref tt);
         }
 
         public static void Optimize(List<FunctionNode> functions)
@@ -127,11 +127,11 @@ namespace Functional
             // compile the .fh file
             foreach (var type in definitions.Item2)
             {
-                output.WriteLine("type {0} = {1}", type.Name, type.NodeType);
+                output.WriteLine("type {0} = {1}", type.Name, type.ActualType);
             }
             foreach (var func in definitions.Item1)
             {
-                output.WriteLine("external {0} :: {1}", func.Name, func.NodeType);
+                output.WriteLine("external {0} :: {1}", func.Name, func.Predicate);
             }
         }
     }

@@ -8,25 +8,29 @@ namespace Functional.parser.patterns
     public class AndTypePattern : Pattern
     {
         public Pattern[] Members { get; }
-        private AstType patType;
+        private AndType patType;
 
         public AndTypePattern(Pattern[] members)
         {
             Members = members;
         }
 
-        public bool MatchesType(AstType asttype)
+        public bool MatchesType(Ty asttype)
         {
-            if (!asttype.Is<AndType>()) return false;
-            AndType type = asttype.As<AndType>();
+            if (!asttype.Type.Is<AndType>()) return false;
+            AndType type = asttype.Type.As<AndType>();
 
             return (type.Members.Length == Members.Length)
                 && type.Members.Zip(Members, (t, pat) => pat.MatchesType(t))
                                .Aggregate(true, (b1, b2) => b1 && b2);
         }
 
-        public void SetType(AstType type)
-            => patType = type;
+        public void SetType(Ty type)
+        {
+            patType = type.Type.As<AndType>();
+            for (int i = 0; i < Members.Length; i++)
+                Members[i].SetType(patType.Members[i]);
+        }
 
         public string CompileTest(string baseName)
         {
@@ -36,7 +40,7 @@ namespace Functional.parser.patterns
             return string.Join(" && ", Tests);
         }
 
-        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
             foreach (var patt in Members)
                 patt.GetBindingsTypes(ref bindings);

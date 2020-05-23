@@ -6,9 +6,9 @@ namespace Functional.types
 {
     public class OrType : AstType
     {
-        public (string, AstType)[] Variants { get; }
+        public (string, Ty)[] Variants { get; }
 
-        public OrType((string, AstType)[] variants)
+        public OrType((string, Ty)[] variants)
         {
             Variants = variants;
         }
@@ -23,9 +23,6 @@ namespace Functional.types
             => "(" + string.Join(" | ", 
                 Variants.Select((x) => x.Item1 + " " + x.Item2)) 
                 + ")";
-
-        public override void ResolveNamedTypes(Dictionary<string, AstType> aliases)
-            => Array.ForEach(Variants, (x) => x.Item2.ResolveNamedTypes(aliases));
 
         public bool Equals(OrType or)
             => Variants.Length == or.Variants.Length

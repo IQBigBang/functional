@@ -6,25 +6,16 @@ namespace Functional.types
     public abstract class AstType
     { 
 
-        public abstract void ResolveNamedTypes(Dictionary<string, AstType> aliases);
         public abstract string GetCName();
         public abstract string GetMangledName();
 
-        // Should be used instead of `is` operator, because it properly handles aliases
+        // Historically, those methods are used instead of `is` and `as`
+        // However right now they don't offer any special logic
         public bool Is<T>()
-        {
-            if (this is NamedType at)
-                return at.InnerType.Is<T>();
-            return this is T;
-        }
+            => this is T;
 
-        // Should be used instead of casting, because it properly handles aliases
-        public T As<T>() where T: AstType
-        {
-            if (this is NamedType at)
-                return (T)at.InnerType;
-            return (T)this;
-        }
+        public T As<T>() where T : AstType
+            => (T)this;
 
         public static bool operator ==(AstType t1, AstType t2)
         {
@@ -39,8 +30,6 @@ namespace Functional.types
                 return true;
 
             // conditional comparisons
-            if (t1 is NamedType alt1 && t2 is NamedType alt2)
-                return alt1.Equals(t1);
             if (t1 is AndType at1 && t2 is AndType at2)
                 return at1.Equals(at2);
             if (t1 is OrType ot1 && t2 is OrType ot2)

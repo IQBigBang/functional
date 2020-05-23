@@ -7,29 +7,29 @@ namespace Functional.ast
     {
         public dynamic Value { get; }
 
-        public ConstantNode(int value, string fileAndLine) : base(fileAndLine)
+        public ConstantNode(int value, string fileAndLine, ref TypeTable tt) : base(fileAndLine)
         {
             Value = value;
-            NodeType = new NamedType("Int", new IntType());
+            NodeType = new Ty("Int", ref tt);
         }
 
-        public ConstantNode(bool value, string fileAndLine) : base(fileAndLine)
+        public ConstantNode(bool value, string fileAndLine, ref TypeTable tt) : base(fileAndLine)
         {
             Value = value;
-            NodeType = new NamedType("Bool", new BoolType());
+            NodeType = new Ty("Bool", ref tt);
         }
 
         // The string is expected to be in double quotes
-        public ConstantNode(string s, string fileAndLine) : base(fileAndLine)
+        public ConstantNode(string s, string fileAndLine, ref TypeTable tt) : base(fileAndLine)
         {
             Value = s;
-            NodeType = new NamedType("String", new StringType());
+            NodeType = new Ty("String", ref tt);
         }
 
-        public ConstantNode(string fileAndLine) : base(fileAndLine)
+        public ConstantNode(string fileAndLine, ref TypeTable tt) : base(fileAndLine)
         {
             Value = null;
-            NodeType = new NamedType("Nil", new NilType());
+            NodeType = new Ty("Nil", ref tt);
         }
 
         public override void Accept(AstVisitor visitor)

@@ -7,11 +7,12 @@ namespace Functional.ast
     public class TypeDefinitionNode : Node
     {
         public string Name { get; }
+        public AstType ActualType { get; }
 
         public TypeDefinitionNode(string name, AstType actual, string fileAndLine) : base(fileAndLine)
         {
             Name = name;
-            NodeType = actual;
+            ActualType = actual;
         }
 
         public override void Accept(AstVisitor visitor)
