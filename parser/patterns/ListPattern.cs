@@ -37,22 +37,29 @@ namespace Functional.parser.patterns
             return "list_has_n(" + baseName + ", " + ElementPatterns.Length + ") && " + ElementTests;
         }
 
-        public bool MatchesType(AstType type)
+        public bool MatchesType(Ty type)
         {
-            if (!type.Is<ListType>()) return false;
-            ListType ltype = type.As<ListType>();
+            if (!type.Type.Is<ListType>()) return false;
+            ListType ltype = type.Type.As<ListType>();
 
             if (isEmpty) return true;
 
             return ElementPatterns
                 .Select((x) => x.MatchesType(ltype.ListElementsType))
                 .Aggregate(true, (b1, b2) => b1 && b2)
-                && TailPattern.MatchesType(ltype);
+                && TailPattern.MatchesType(type);
         }
 
-        public void SetType(AstType type) { }
+        public void SetType(Ty type) 
+        {
+            if (isEmpty) return;
 
-        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+            for (int i = 0; i < ElementPatterns.Length; i++)
+                ElementPatterns[i].SetType(type.Type.As<ListType>().ListElementsType);
+            TailPattern.SetType(type);
+        }
+
+        public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
             if (isEmpty) return;
             foreach (var patt in ElementPatterns)

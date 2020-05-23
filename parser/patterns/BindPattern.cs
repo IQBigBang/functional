@@ -7,7 +7,7 @@ namespace Functional.parser.patterns
     public class BindPattern : Pattern
     {
         public string bindname { get; }
-        private AstType patternType;
+        private Ty patternType;
 
         public BindPattern(string bindname)
         {
@@ -15,16 +15,16 @@ namespace Functional.parser.patterns
         }
 
         // matches any type
-        public bool MatchesType(AstType type)
+        public bool MatchesType(Ty type)
             => true;
 
-        public void SetType(AstType type)
+        public void SetType(Ty type)
             => patternType = type;
 
         public string CompileTest(string baseName)
             => "true"; // BindPattern matches everything
 
-        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
             bindings.Add(bindname, patternType);
         }

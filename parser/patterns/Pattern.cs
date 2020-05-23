@@ -20,20 +20,20 @@ namespace Functional.parser.patterns
         /// for the type supplied
         /// </summary>
         /// <returns><c>true</c>, if type was matched, <c>false</c> otherwise.</returns>
-        bool MatchesType(AstType type);
+        bool MatchesType(Ty type);
 
         /// <summary>
         /// Sets the internal type of the pattern (if the pattern requires its type)
         /// The type is expected to be a valid option for this pattern (it should be checked by MatchesType first)
         /// </summary>
         /// <param name="type">The type of the pattern</param>
-        void SetType(AstType type);
+        void SetType(Ty type);
 
         /// <summary>
         /// Gets all the binded arguments from the pattern (and its subpatterns)
         /// </summary>
         /// <returns>The bindings in form (bindName, bindType)</returns>
-        void GetBindingsTypes(ref Dictionary<string, AstType> bindings);
+        void GetBindingsTypes(ref Dictionary<string, Ty> bindings);
 
         /// <summary>
         /// Gets all the binded arguments from the pattern (and its subpatterns)

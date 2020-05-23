@@ -9,7 +9,7 @@ namespace Functional.parser.patterns
     {
         public string VariantName { get; }
         public Pattern InnerValue { get; }
-        private AstType patType;
+        private OrType patType;
 
         public OrTypePattern(string variantName, Pattern innerValue)
         {
@@ -26,19 +26,22 @@ namespace Functional.parser.patterns
             return baseName + "->tag == " + VariantIndex + " && " + InnerValueTest;
         }
 
-        public bool MatchesType(AstType type)
+        public bool MatchesType(Ty type)
         {
-            if (!type.Is<OrType>()) return false;
-            var ortype = type.As<OrType>();
+            if (!type.Type.Is<OrType>()) return false;
+            var ortype = type.Type.As<OrType>();
 
             return ortype.Variants.Any((variant) =>
                 variant.Item1 == VariantName && InnerValue.MatchesType(variant.Item2));
         }
 
-        public void SetType(AstType type)
-            => patType = type;
+        public void SetType(Ty type)
+        {
+            patType = type.Type.As<OrType>();
+            InnerValue.SetType(patType.Variants.First((variant) => variant.Item1 == VariantName).Item2);
+        }
 
-        public void GetBindingsTypes(ref Dictionary<string, AstType> bindings)
+        public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
             InnerValue.GetBindingsTypes(ref bindings);
         }

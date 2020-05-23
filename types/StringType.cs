@@ -10,10 +10,7 @@ namespace Functional.types
 
         public override string GetMangledName()
             => "S";
-
-        public override void ResolveNamedTypes(Dictionary<string, AstType> aliases)
-        { }
-
+            
         public override string ToString()
             => "String";
     }

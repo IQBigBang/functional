@@ -61,7 +61,6 @@ definitiontypename
 definitionsimpletypename
     : 'List' definitionsimpletypename # ListDefinitionsimpletypename
     | ID # NamedDefinitionsimpletypename
-    | definitiontypename # DefinitiontypenameDefinitionsimpletypename
     ;
     
 stmt

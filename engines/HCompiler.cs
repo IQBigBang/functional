@@ -31,8 +31,8 @@ namespace Functional.engines
                 output.Write("int main()");
                 return;
             }
-
-            var innerTypes = (node.NodeType as FunctionType).InnerTypes;
+            
+            var innerTypes = node.Predicate.InnerTypes;
             output.Write("{0} {1}(", innerTypes.Last().GetCName(), node.GetMangledName());
             for (int i = 0; i < innerTypes.Length - 1; i++)
             {
@@ -42,12 +42,11 @@ namespace Functional.engines
             output.Write(")");
         }
 
-        private void GenerateStructDefinition(AstType type)
+        private void GenerateStructDefinition(Ty type)
         {
-            if (type is null) return;
-            if (type.Is<FunctionType>())
+            if (type.Type.Is<FunctionType>())
             {
-                var ftype = type.As<FunctionType>();
+                var ftype = type.Type.As<FunctionType>();
                 // Note that function types may or may not be used
                 if (Generated.Contains(ftype.GetCName()))
                     return;
@@ -120,7 +119,7 @@ namespace Functional.engines
 
         public override void VisitTypeDefinition(TypeDefinitionNode node)
         {
-            if (node.NodeType is AndType atype)
+            if (node.ActualType is AndType atype)
             {
                 if (Generated.Contains(node.Name))
                     return;
@@ -147,7 +146,7 @@ namespace Functional.engines
 
                 Generated.Add(node.Name);
 
-            } else if (node.NodeType is OrType otype)
+            } else if (node.ActualType is OrType otype)
             {
                 if (Generated.Contains(node.Name))
                     return;
