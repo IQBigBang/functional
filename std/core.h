@@ -2,7 +2,7 @@
 #define FUNCTIONAL_CORE_LIB
 #include <stddef.h>
 
-// std.core library - implicitly imported and linked in
+/* std.core library - implicitly imported and linked in */
 
 /* Core library types */
 
@@ -30,6 +30,9 @@ void* alloc(size_t len);
 /* Allocate `len` bytes that don't contain any pointers inside */
 void* alloc_atomic(size_t len);
 
+/* Initialize the garbage collector */
+bool GC_init(void);
+
 /* Copy n bytes of memory */
 void mem_copy(void* from, void* to, size_t len);
 
@@ -45,7 +48,7 @@ string_t* string_concat(string_t* one, string_t* two);
 /* Create a new empty list
  * Time complexity: maximum O(1)
  */
-list_t* list_new();
+list_t* list_new(void);
 
 /* Create a new list with one element
  * Time complexity: maximum O(1)

@@ -113,6 +113,9 @@ namespace Functional.engines
             // Open the block
             Output.WriteLine(" {");
 
+            if (node.Name == "main")
+                Output.WriteLine("GC_init();");
+
             foreach (var overload in node.Overloads)
             {
                 // First resolve bindings

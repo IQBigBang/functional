@@ -1,6 +1,6 @@
-﻿grammar functional;
+grammar functional;
 
-WS: [ \t\r]+ -> skip;
+WS: [ \t]+ -> skip;
 
 INT: [0-9]+;
 ID: [a-zA-Z][a-zA-Z0-9_]*; // IDs cannot start with an underscore
@@ -22,11 +22,11 @@ RBRACK: ']';
 COMMA: ',';
 JOIN: ':';
 DOT: '.';
-NL: '\n'+;
+NL: ('\r\n'|'\n')+;
 
 
 program
-    : NL? definition*
+    : NL? definition* EOF
     ;
     
 definition

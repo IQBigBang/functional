@@ -4,17 +4,10 @@
 
 /* MEMORY */
 
-// Defined by the BDWGC
-extern void* GC_malloc(size_t len);
-extern void* GC_malloc_atomic(size_t  len);
-
-void* alloc(size_t len) {
-	return GC_malloc(len);
-}
-
-void* alloc_atomic(size_t len) {
-        return GC_malloc_atomic(len);
-}
+/* Defined by the GC */
+extern void* alloc(size_t len);
+extern void* alloc_atomic(size_t len);
+extern bool GC_init(void);
 
 void mem_copy(void* from, void* to, size_t len) {
 	memcpy(to, from, len);
@@ -41,7 +34,7 @@ string_t* string_concat(string_t* one, string_t* two) {
 
 /* LISTS */
 
-list_t* list_new() {
+list_t* list_new(void) {
 	return (list_t*)NULL;
 }
 
