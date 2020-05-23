@@ -131,7 +131,9 @@ namespace Functional
             }
             foreach (var func in definitions.Item1)
             {
-                output.WriteLine("external {0} :: {1}", func.Name, func.Predicate);
+                // Not redefine already external functions 
+                if (!func.IsExternal)
+                    output.WriteLine("external {0} :: {1}", func.Name, func.Predicate);
             }
         }
     }
