@@ -45,7 +45,7 @@ namespace Functional.engines
                     GlobalFunctions.Add(def.Name, new FunctionType(ConstructorType));
                 } 
                 // If it is an OrType, add variant constructors to the function list
-                else if (def.NodeType.Type.Is<OrType>())
+                else if (def.ActualType.Is<OrType>())
                 {
                     var namedType = new Ty(def.Name, def.ActualType, ref typeTable);
                     var orType = def.ActualType.As<OrType>();

@@ -67,6 +67,9 @@ namespace Functional.engines
 
         public void VisitAll((List<FunctionNode>, List<TypeDefinitionNode>) nodes)
         {
+            // Generate typedefs, in case of self-recursive types
+            nodes.Item2.ForEach((tp) =>
+                Output.WriteLine("typedef struct _Struct{0}_t {0}_t;", tp.Name));
             nodes.Item2.ForEach(Visit);
             nodes.Item1.ForEach(Visit);
         }
@@ -74,7 +77,7 @@ namespace Functional.engines
         // We check types of all nodes
         public new void Visit(Node node)
         {
-            if (!(node is FunctionNode))
+            if (!(node is FunctionNode) && !(node.NodeType is null))
                 GenerateStructDefinition(node.NodeType);
             node.Accept(this);
         }
@@ -125,7 +128,7 @@ namespace Functional.engines
                     return;
 
                 // Generate typedef struct
-                Output.WriteLine("typedef struct {");
+                Output.WriteLine("typedef struct _Struct{0}_t {{", node.Name);
                 for (int i = 0; i < atype.Members.Length; i++)
                     Output.WriteLine("{0} _{1};", atype.Members[i].GetCName(), i);
                 Output.WriteLine("}} {0}_t;", node.Name);
@@ -152,7 +155,7 @@ namespace Functional.engines
                     return;
 
                 // Generate typedef struct (tagged union)
-                Output.WriteLine("typedef struct {");
+                Output.WriteLine("typedef struct _Struct{0}_t {{", node.Name);
                 Output.WriteLine("int tag;");
                 Output.WriteLine("union {");
                 Array.ForEach(otype.Variants, (x) =>

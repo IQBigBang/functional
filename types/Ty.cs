@@ -65,9 +65,14 @@ namespace Functional.types
         /// Returns a string that is a valid type in Functional
         /// For AndTypes and OrTypes returns their definition in usable format
         /// </summary>
-        public override string ToString()
+        public string GetTypeDefinition()
         {
             return Type.ToString();
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         public static explicit operator AstType(Ty ty)

@@ -127,11 +127,11 @@ namespace Functional
             // compile the .fh file
             foreach (var type in definitions.Item2)
             {
-                output.WriteLine("type {0} = {1}", type.Name, type.NodeType);
+                output.WriteLine("type {0} = {1}", type.Name, type.ActualType);
             }
             foreach (var func in definitions.Item1)
             {
-                output.WriteLine("external {0} :: {1}", func.Name, func.NodeType);
+                output.WriteLine("external {0} :: {1}", func.Name, func.Predicate);
             }
         }
     }

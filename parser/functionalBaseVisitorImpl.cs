@@ -37,7 +37,11 @@ namespace Functional.parser
                 var def = Visit(d);
                 if (def is null) continue;
                 else if (def is FunctionNode fdef) funcs.Add(fdef);
-                else if (def is TypeDefinitionNode tdef) aliases.Add(tdef);
+                else if (def is TypeDefinitionNode tdef)
+                {
+                    aliases.Add(tdef);
+                    typeTable.Insert(tdef.Name, tdef.ActualType);
+                }
             }
             return (funcs, aliases);
         }
