@@ -113,9 +113,9 @@ call
     
 atom
     : INT # IntAtom
-    | ID # VarAtom
+    | ID (DBLCOLON anontypename)? # VarAtom
     | STR # StringAtom
     | 'nil' # NilAtom
     | LPAREN expr RPAREN # ParenAtom
-    | LBRACK (expr COMMA)* expr? RBRACK (DBLCOLON simpleanontypename)? # ListAtom
+    | LBRACK (expr COMMA)* expr? RBRACK (DBLCOLON anontypename)? # ListAtom
     ;

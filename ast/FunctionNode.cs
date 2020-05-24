@@ -32,13 +32,7 @@ namespace Functional.ast
         }
 
         public string GetMangledName()
-        {
-            var s = "_M" + Name;
-            // Skip the last type = return type
-            for (int i = 0; i < Predicate.InnerTypes.Length - 1; i++)
-                s += "_" + Predicate.InnerTypes[i].GetMangledName() + i;
-            return s;
-        }
+            => Predicate.GetNamedFunctionMangledName(Name);
 
         public override void Accept(AstVisitor visitor)
         {

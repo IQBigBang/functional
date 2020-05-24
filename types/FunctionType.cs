@@ -26,6 +26,15 @@ namespace Functional.types
             return s;
         }
 
+        public string GetNamedFunctionMangledName(string name)
+        {
+            var s = "_M" + name;
+            // Skip the last type = return type
+            for (int i = 0; i < InnerTypes.Length - 1; i++)
+                s += "_" + InnerTypes[i].GetMangledName() + i;
+            return s;
+        }
+
         public bool Equals(FunctionType ft)
             => InnerTypes.Zip(ft.InnerTypes, (t1, t2) => t1 == t2)
                          .Aggregate(true, (b1, b2) => b1 && b2);

@@ -138,8 +138,11 @@ namespace Functional.engines
                 for (int i = 0; i < atype.Members.Length; i++)
                     ConstructorParameters[i] = atype.Members[i].GetCName() + " _" + i;
 
-                Output.WriteLine("{0}_t* {0}({1}) {{",
-                    node.Name, string.Join(", ", ConstructorParameters));
+                Output.WriteLine("{0}_t* {1}({2}) {{",
+                    node.Name,
+                    // we use the FunctionType only for mangled name generation, so we add `null` as a replacement for the return type which does not affect the mangled name
+                    new FunctionType(atype.Members.Append(null).ToArray()).GetNamedFunctionMangledName(node.Name),
+                    string.Join(", ", ConstructorParameters));
 
                 Output.WriteLine("{0}_t* tmp = ({0}_t*)alloc(sizeof({0}_t));", node.Name);
                 for (int i = 0; i < atype.Members.Length; i++)
@@ -168,8 +171,11 @@ namespace Functional.engines
                 {
                     var (variantName, variantType) = otype.Variants[i];
 
-                    Output.WriteLine("{0}_t* {0}_{1}({2} val) {{",
-                        node.Name, variantName, variantType.GetCName());
+                    Output.WriteLine("{0}_t* {1}({2} val) {{",
+                        node.Name,
+                        // see AndType constructor generation, the same hack 
+                        new FunctionType(new Ty[] { variantType, null }).GetNamedFunctionMangledName(variantName), 
+                        variantType.GetCName());
                     Output.WriteLine("{0}_t* tmp = ({0}_t*)alloc(sizeof({0}_t));", node.Name);
                     Output.WriteLine("tmp->tag = {0};", i);
                     Output.WriteLine("tmp->as.{0} = val;", variantName);

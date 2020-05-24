@@ -11,9 +11,10 @@ namespace Functional.engines
     public class TypeChecker : AstVisitor
     {
         /// <summary>
-        /// Contains types of global functions (not modified by FunctionNode)
+        /// Contains all global functions (not modified by FunctionNode)
+        /// in format (name, function-type)
         /// </summary>
-        private Dictionary<string, FunctionType> GlobalFunctions;
+        private List<(string, FunctionType)> GlobalFunctions;
 
         /// <summary>
         /// Contains current function symbols (set by FunctionNode)
@@ -27,7 +28,7 @@ namespace Functional.engines
 
         public void CheckAll((List<FunctionNode>, List<TypeDefinitionNode>) definitions, ref TypeTable typeTable)
         {
-            GlobalFunctions = new Dictionary<string, FunctionType>();
+            GlobalFunctions = new List<(string, FunctionType)>();
             CurrentFunctionSymbols = new Dictionary<string, Ty>();
             TypeTable = typeTable;
 
@@ -42,7 +43,7 @@ namespace Functional.engines
                     var andType = def.ActualType.As<AndType>();
 
                     var ConstructorType = andType.Members.Concat(new Ty[] { namedType }).ToArray();
-                    GlobalFunctions.Add(def.Name, new FunctionType(ConstructorType));
+                    GlobalFunctions.Add((def.Name, new FunctionType(ConstructorType)));
                 } 
                 // If it is an OrType, add variant constructors to the function list
                 else if (def.ActualType.Is<OrType>())
@@ -54,14 +55,14 @@ namespace Functional.engines
                     {
                         var VariantConstructorType =
                             new FunctionType(new Ty[2] { variant.Item2, namedType });
-                        GlobalFunctions.Add(variant.Item1, VariantConstructorType);
+                        GlobalFunctions.Add((variant.Item1, VariantConstructorType));
                     });
                 }
             }
 
             foreach (var f in definitions.Item1)
             {
-                GlobalFunctions.Add(f.Name, f.Predicate);
+                GlobalFunctions.Add((f.Name, f.Predicate));
             }
 
             definitions.Item1.ForEach((f) => Visit(f));
@@ -110,8 +111,19 @@ namespace Functional.engines
 
         public override void VisitCall(CallNode node)
         {
-            Visit(node.Callee);
             for (int i = 0; i < node.Args.Length; i++) Visit(node.Args[i]);
+
+            // If you use a direct call in form `f x y`, supply the type hint
+            if (node.Callee is VarNode varnode)
+            {
+                if (varnode.UserSuppliedTypeHint)
+                    ErrorReporter.Warning("Unnecessary type hint - the type will be inferred");
+                varnode.TypeHint = new Ty(new FunctionType(
+                    node.Args.Select((x) => x.NodeType).ToArray()
+                ), ref TypeTable);
+            }
+
+            Visit(node.Callee);
 
             if (!node.Callee.NodeType.Type.Is<FunctionType>())
                 node.ReportError("Cannot call a non-function");
@@ -227,13 +239,53 @@ namespace Functional.engines
         {
             if (node.Name == "main")
                 node.ReportError("Main should never be called or used in another function");
-
-            if (GlobalFunctions.ContainsKey(node.Name))
-                node.NodeType = new Ty(GlobalFunctions[node.Name], ref TypeTable);
-            else if (CurrentFunctionSymbols.ContainsKey(node.Name))
+            
+            if (CurrentFunctionSymbols.ContainsKey(node.Name))
+            {
+                // Print the warning only if the type-hint is user-supplied, not automatically by the type-checker
+                if (!(node.TypeHint is null) && node.UserSuppliedTypeHint)
+                    node.ReportWarning("Type hints are ignored for local symbols");
                 node.NodeType = CurrentFunctionSymbols[node.Name];
-            else
-                node.ReportError("Undefined variable `{0}`", node.Name);
+                return;
+            }
+
+            var ViableFunctions =
+                GlobalFunctions.Where((x) => x.Item1 == node.Name);
+            if (ViableFunctions.Any())
+            {
+                if (node.TypeHint is null)
+                    node.ReportError("The function `{0}` requires a type-hint", node.Name);
+
+                FunctionType hint;
+                // convert hints with just one type to function-type 
+                if (!node.TypeHint.Type.Is<FunctionType>())
+                    hint = new FunctionType(new Ty[] { node.TypeHint });
+                else
+                    hint = node.TypeHint.Type.As<FunctionType>();
+
+                var MatchedFunctions = ViableFunctions.Where((func) =>
+                {
+                    // The type hint is expected to be without the return type (just arguments)
+                    if (func.Item2.InnerTypes.Length != hint.InnerTypes.Length + 1)
+                        return false;
+                    var okay = true;
+                    for (int i = 0; i < hint.InnerTypes.Length; i++)
+                        okay &= func.Item2.InnerTypes[i] == hint.InnerTypes[i];
+                    return okay;
+                }).ToList();
+
+                if (MatchedFunctions.Count == 0)
+                    node.ReportError("No viable function {0} of type {1}", node.Name, hint);
+                if (MatchedFunctions.Count > 1)
+                    node.ReportError("Multiple alternatives for function {0} of type {1}", node.Name, hint);
+
+                // If there is only one function left, we found the right one
+                node.NodeType = new Ty(MatchedFunctions[0].Item2, ref TypeTable);
+                node.Name = MatchedFunctions[0].Item2.GetNamedFunctionMangledName(node.Name);
+                return;
+            }
+
+            node.ReportError("Undefined variable `{0}`", node.Name);
         }
 
         public override void VisitWhereClause(WhereClauseNode node)

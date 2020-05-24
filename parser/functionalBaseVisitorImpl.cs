@@ -259,7 +259,12 @@ namespace Functional.parser
             => new ConstantNode(int.Parse(context.GetText()), FileAndLine(context), ref typeTable);
 
         public override object VisitVarAtom([NotNull] functionalParser.VarAtomContext context)
-            => new VarNode(context.ID().GetText(), FileAndLine(context));
+        {
+            var id = context.ID().GetText();
+            if (context.anontypename() is null)
+                return new VarNode(id, null, FileAndLine(context));
+            return new VarNode(id, (Ty)Visit(context.anontypename()), FileAndLine(context));
+        }
 
         public override object VisitStringAtom([NotNull] functionalParser.StringAtomContext context)
             => new ConstantNode(context.GetText(), FileAndLine(context), ref typeTable);
@@ -270,9 +275,9 @@ namespace Functional.parser
         public override object VisitListAtom([NotNull] functionalParser.ListAtomContext context)
         {
             var elements = context.expr().Select((x) => (Node)Visit(x)).ToArray();
-            if (context.simpleanontypename() is null)
+            if (context.anontypename() is null)
                 return new ListNode(elements, null, FileAndLine(context));
-            return new ListNode(elements, (Ty)Visit(context.simpleanontypename()), FileAndLine(context));
+            return new ListNode(elements, (Ty)Visit(context.anontypename()), FileAndLine(context));
         }
 
         public override object VisitParenAtom([NotNull] functionalParser.ParenAtomContext context)

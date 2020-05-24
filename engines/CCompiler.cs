@@ -21,13 +21,11 @@ namespace Functional.engines
     {
         private StreamWriter Output;
         private Dictionary<string, string> CurrentFunctionSymbols;
-        private Dictionary<string, string> GlobalFunctions;
 
         public CCompiler(StreamWriter outputWriter)
         {
             Output = outputWriter;
             CurrentFunctionSymbols = new Dictionary<string, string>();
-            GlobalFunctions = new Dictionary<string, string>();
         }
 
         private static Random rand = new Random();
@@ -43,30 +41,11 @@ namespace Functional.engines
 
         public void CompileAll((List<FunctionNode>, List<TypeDefinitionNode>) definitions)
         {
-            foreach (var f in definitions.Item1)
-            {
-                GlobalFunctions.Add(f.Name, f.GetMangledName());
-            }
-
-            foreach (var d in definitions.Item2)
-            {
-                // Add constructors to `GlobalFunctions`
-                Visit(d);
-            }
-
             definitions.Item1.ForEach((f) => Visit(f));
         }
 
         public override string VisitTypeDefinition(TypeDefinitionNode node)
         {
-            // If AndType add the type constructor to GlobalFunctions
-            if (node.ActualType is AndType)
-                GlobalFunctions.Add(node.Name, node.Name);
-            // If OrType add the variant constructors to GlobalFunctions
-            if (node.ActualType is OrType otype)
-                Array.ForEach(otype.Variants, (v) =>
-                    GlobalFunctions.Add(v.Item1, node.Name + "_" + v.Item1));
-
             return "";
         }
 
@@ -177,11 +156,9 @@ namespace Functional.engines
         {
             if (CurrentFunctionSymbols.ContainsKey(node.Name))
                 return CurrentFunctionSymbols[node.Name];
-            if (GlobalFunctions.ContainsKey(node.Name))
-                return GlobalFunctions[node.Name];
-
-            node.ReportError("Undefined variable `{0}`", node.Name);
-            return "";
+            // If the variable is not a local symbol, it must be a global variable
+            // in which case, its name is already mangled
+            return node.Name;
         }
 
         public override string VisitWhereClause(WhereClauseNode node)
