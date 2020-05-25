@@ -61,18 +61,11 @@ namespace Functional.types
             return Type.GetMangledName();
         }
 
-        /// <summary>
-        /// Returns a string that is a valid type in Functional
-        /// For AndTypes and OrTypes returns their definition in usable format
-        /// </summary>
-        public string GetTypeDefinition()
-        {
-            return Type.ToString();
-        }
-
         public override string ToString()
         {
-            return Name;
+            if (Type.Is<AndType>() || Type.Is<OrType>())
+                return Name;
+            return Type.ToString();
         }
 
         public static explicit operator AstType(Ty ty)

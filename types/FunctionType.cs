@@ -41,7 +41,12 @@ namespace Functional.types
 
         public override string ToString()
         {
-            return string.Join(" -> ", InnerTypes.Select((x) => x.ToString()));
+            return string.Join(" -> ", InnerTypes.Select((x) => 
+            {
+                if (x.Type.Is<FunctionType>())
+                    return "(" + x + ")";
+                return x.ToString();
+            }));
         }
     }
 }
