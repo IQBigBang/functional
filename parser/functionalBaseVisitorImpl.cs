@@ -40,7 +40,7 @@ namespace Functional.parser
                 else if (def is TypeDefinitionNode tdef)
                 {
                     aliases.Add(tdef);
-                    typeTable.Insert(tdef.Name, tdef.ActualType);
+                    typeTable.Insert(tdef.Name, tdef.ActualType, tdef.FileAndLine);
                 }
             }
             return (funcs, aliases);

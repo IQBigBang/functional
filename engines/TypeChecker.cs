@@ -34,30 +34,7 @@ namespace Functional.engines
 
             foreach (var def in definitions.Item2)
             {
-                TypeTable.Insert(def.Name, def.ActualType);
-
-                // If it is an AndType, add a constructor to the function list
-                if (def.ActualType.Is<AndType>())
-                {
-                    var namedType = new Ty(def.Name, def.ActualType, ref TypeTable);
-                    var andType = def.ActualType.As<AndType>();
-
-                    var ConstructorType = andType.Members.Concat(new Ty[] { namedType }).ToArray();
-                    GlobalFunctions.Add((def.Name, new FunctionType(ConstructorType)));
-                } 
-                // If it is an OrType, add variant constructors to the function list
-                else if (def.ActualType.Is<OrType>())
-                {
-                    var namedType = new Ty(def.Name, def.ActualType, ref typeTable);
-                    var orType = def.ActualType.As<OrType>();
-
-                    Array.ForEach(orType.Variants, (variant) =>
-                    {
-                        var VariantConstructorType =
-                            new FunctionType(new Ty[2] { variant.Item2, namedType });
-                        GlobalFunctions.Add((variant.Item1, VariantConstructorType));
-                    });
-                }
+                VisitTypeDefinition(def);
             }
 
             foreach (var f in definitions.Item1)
@@ -232,7 +209,28 @@ namespace Functional.engines
 
         public override void VisitTypeDefinition(TypeDefinitionNode node)
         {
-            return;
+            // If it is an AndType, add a constructor to the function list
+            if (node.ActualType.Is<AndType>())
+            {
+                var namedType = new Ty(node.Name, node.ActualType, ref TypeTable, node.FileAndLine);
+                var andType = node.ActualType.As<AndType>();
+
+                var ConstructorType = andType.Members.Concat(new Ty[] { namedType }).ToArray();
+                GlobalFunctions.Add((node.Name, new FunctionType(ConstructorType)));
+            }
+            // If it is an OrType, add variant constructors to the function list
+            else if (node.ActualType.Is<OrType>())
+            {
+                var namedType = new Ty(node.Name, node.ActualType, ref TypeTable, node.FileAndLine);
+                var orType = node.ActualType.As<OrType>();
+
+                Array.ForEach(orType.Variants, (variant) =>
+                {
+                    var VariantConstructorType =
+                        new FunctionType(new Ty[2] { variant.Item2, namedType });
+                    GlobalFunctions.Add((variant.Item1, VariantConstructorType));
+                });
+            }
         }
 
         public override void VisitVar(VarNode node)

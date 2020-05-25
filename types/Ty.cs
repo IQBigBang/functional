@@ -30,11 +30,11 @@ namespace Functional.types
         /// <param name="name">The type name</param>
         /// <param name="type">The actual type</param>
         /// <param name="tt">The type table</param>
-        public Ty(string name, AstType type, ref TypeTable tt)
+        public Ty(string name, AstType type, ref TypeTable tt, string fileAndLine)
         {
             Name = name;
             Tt = tt;
-            Tt.Insert(name, type);
+            Tt.Insert(name, type, fileAndLine);
         }
 
         /// <summary>
@@ -42,7 +42,8 @@ namespace Functional.types
         /// </summary>
         /// <param name="type">Type.</param>
         /// <param name="tt">Tt.</param>
-        public Ty(AstType type, ref TypeTable tt) : this(type.GetMangledName(), type, ref tt)
+        // FileAndLine is passed as an empty string, because it is used to throw duplicite type definition error and that can't happen with auto-named types
+        public Ty(AstType type, ref TypeTable tt) : this(type.GetMangledName(), type, ref tt, "")
         {
         }
 

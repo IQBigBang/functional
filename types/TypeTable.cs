@@ -30,12 +30,12 @@ namespace Functional.types
             return null;
         }
 
-        public void Insert(string name, AstType type)
+        public void Insert(string name, AstType type, string fileAndLine)
         {
             if (table.TryGetValue(name, out AstType definedType))
             {
                 if (definedType != type)
-                    ErrorReporter.Error("Duplicite type definition. Type {0} defined twice, first as {1} but then as {2}", name, definedType, type);
+                    ErrorReporter.ErrorFL("Duplicite type definition. Type {0} defined twice, first as {1} but then as {2}", fileAndLine, name, definedType, type);
                 return; // if there already is the same type under the same name, just ignore it => uniqueness
             }
             table[name] = type;
