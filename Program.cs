@@ -38,6 +38,7 @@ namespace Functional
         public static void Evaluate(CmdArgs args)
         {
             //ErrorReporter.ThrowExceptions = true;
+            ErrorReporter.Init();
 
             // All the files are processed together
             var AllFunctions = new List<FunctionNode>();
