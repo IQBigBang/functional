@@ -4,7 +4,6 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    [Serializable]
     public class ConstIntPattern : Pattern
     {
         public int value { get; }
@@ -29,5 +28,7 @@ namespace Functional.parser.patterns
         public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
         {
         }
+
+        public Pattern Clone() => new ConstIntPattern(value);
     }
 }

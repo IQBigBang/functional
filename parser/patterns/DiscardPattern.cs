@@ -4,7 +4,6 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    [Serializable]
     public class DiscardPattern : Pattern
     {
         public string CompileTest(string baseName)
@@ -22,5 +21,6 @@ namespace Functional.parser.patterns
             => true;
 
         public void SetType(Ty type) { }
+        public Pattern Clone() => new DiscardPattern();
     }
 }

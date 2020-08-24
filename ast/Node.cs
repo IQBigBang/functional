@@ -4,8 +4,7 @@ using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
-    public abstract class Node
+    public abstract class Node : IDeepCloneable<Node>
     {
         protected Node(string fileAndLine)
         {
@@ -18,6 +17,7 @@ namespace Functional.ast
         public readonly string FileAndLine;
         public abstract void Accept(AstVisitor visitor);
         public abstract T Accept<T>(AstVisitor<T> visitor);
+        public abstract Node Clone();
 
         public void ReportError(string format, params object[] args)
             => ErrorReporter.ErrorFL(format, FileAndLine, args);

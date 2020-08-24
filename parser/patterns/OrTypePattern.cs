@@ -5,7 +5,6 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    [Serializable]
     public class OrTypePattern : Pattern
     {
         public string VariantName { get; }
@@ -51,5 +50,7 @@ namespace Functional.parser.patterns
         {
             InnerValue.GetBindings(ref bindings, baseName + "->as." + VariantName);
         }
+
+        public Pattern Clone() => new OrTypePattern(VariantName, InnerValue);
     }
 }

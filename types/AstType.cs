@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Functional.types
 {
-    [Serializable]
     public abstract class AstType
     { 
 

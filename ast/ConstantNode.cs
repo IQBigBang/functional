@@ -3,7 +3,6 @@ using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class ConstantNode : Node
     {
         public dynamic Value { get; }
@@ -33,6 +32,12 @@ namespace Functional.ast
             NodeType = new Ty("Nil", ref tt);
         }
 
+        private ConstantNode(dynamic value, Ty nodeType, string fileAndLine) : base(fileAndLine)
+        {
+            Value = value;
+            NodeType = nodeType;
+        }
+
         public override void Accept(AstVisitor visitor)
         {
             visitor.VisitConstant(this);
@@ -42,5 +47,7 @@ namespace Functional.ast
         {
             return visitor.VisitConstant(this);
         }
+
+        public override Node Clone() => new ConstantNode(Value, NodeType, FileAndLine);
     }
 }

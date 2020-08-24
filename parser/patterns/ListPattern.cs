@@ -5,7 +5,6 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    [Serializable]
     public class ListPattern : Pattern
     {
         // If true, the pattern matches against empty list (`[]`)
@@ -80,6 +79,13 @@ namespace Functional.parser.patterns
                 TailPattern.GetBindings(ref bindings, "list_tail(" + baseName + ")");
             else
                 TailPattern.GetBindings(ref bindings, "list_tail_at(" + baseName + ", " + ElementPatterns.Length + ")");
+        }
+
+
+        public Pattern Clone()
+        {
+            if (isEmpty) return new ListPattern();
+            return new ListPattern(ElementPatterns.Append(TailPattern).Select(x => x.Clone()).ToArray());
         }
     }
 }

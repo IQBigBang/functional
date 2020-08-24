@@ -389,7 +389,7 @@ namespace Functional.engines
             // And generate the function
             var MonomorphizedFunction = new FunctionNode(
                 ValidFunctions[0].Item1.Name,
-                DeepClone(ValidFunctions[0].Item1.Overloads),
+                ValidFunctions[0].Item1.Overloads.Select(x => (x.Item1.DeepClone(), x.Item2.Clone(), (WhereClauseNode)x.Item3.Clone())).ToArray(),
                 MonomorphizedPredicate,
                 null,
                 ValidFunctions[0].Item1.FileAndLine
@@ -405,18 +405,6 @@ namespace Functional.engines
             NewMonomorphizedFunctions.Add(MonomorphizedFunction);
 
             return MonomorphizedFunction;
-        }
-
-        private static T DeepClone<T>(T obj)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(ms, obj);
-                ms.Position = 0;
-
-                return (T)formatter.Deserialize(ms);
-            }
         }
     }
 }

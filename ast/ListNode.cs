@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class ListNode : Node
     {
         public Node[] Elements { get; }
@@ -25,5 +25,7 @@ namespace Functional.ast
         {
             return visitor.VisitListNode(this);
         }
+
+        public override Node Clone() => new ListNode(Elements.DeepClone(), TypeHint, FileAndLine);
     }
 }

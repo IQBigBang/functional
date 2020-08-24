@@ -4,7 +4,6 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    [Serializable]
     public class BindPattern : Pattern
     {
         public string bindname { get; }
@@ -34,5 +33,7 @@ namespace Functional.parser.patterns
         {
             bindings.Add(bindname, baseName);
         }
+
+        public Pattern Clone() => new BindPattern(bindname);
     }
 }

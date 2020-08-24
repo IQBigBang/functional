@@ -4,7 +4,6 @@ using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class VarNode : Node
     {
         /// <summary>
@@ -35,5 +34,7 @@ namespace Functional.ast
         {
             return visitor.VisitVar(this);
         }
+
+        public override Node Clone() => new VarNode(Name, TypeHint, FileAndLine);
     }
 }
