@@ -5,6 +5,7 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
+    [Serializable]
     public class ListPattern : Pattern
     {
         // If true, the pattern matches against empty list (`[]`)

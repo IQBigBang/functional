@@ -13,5 +13,11 @@ namespace Functional.types
 
         public override string ToString()
             => "Nil";
+
+        public override bool TryMonomorphize(AstType ExpectedType, ref Dictionary<string, Ty> TypeArgs, string[] ExpectedTypeArgs)
+            => ExpectedType.Is<NilType>();
+
+        public override AstType Monomorphize(Dictionary<string, Ty> TypeArgs)
+            => this;
     }
 }

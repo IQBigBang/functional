@@ -4,6 +4,7 @@ using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public class BinOpNode : Node
     {
         public Node Lhs { get; }

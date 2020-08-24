@@ -7,11 +7,18 @@ using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public class FunctionNode : Node
     {
         public string Name { get; }
+
         public bool IsExternal { get; }
+        // If function is external, this is null
         public (Pattern[], Node, WhereClauseNode)[] Overloads { get; }
+
+        public bool IsGeneric { get; }
+        // If function is not generic, this is null
+        public string[] Typeargs { get; }
 
         public FunctionType Predicate;
 
@@ -19,16 +26,24 @@ namespace Functional.ast
         {
             Name = name;
             IsExternal = true;
+            IsGeneric = false; // external functions are never generic
             Overloads = null;
             Predicate = predicate;
         }
 
-        public FunctionNode(string name, (Pattern[], Node, WhereClauseNode)[] overloads, FunctionType predicate, string fileAndLine) : base(fileAndLine)
+        public FunctionNode(string name, (Pattern[], Node, WhereClauseNode)[] overloads, FunctionType predicate, string[] typeargs, string fileAndLine) : base(fileAndLine)
         {
             Name = name;
             IsExternal = false;
             Overloads = overloads;
             Predicate = predicate;
+            if (typeargs is null || typeargs.Length == 0)
+                IsGeneric = false;
+            else
+            {
+                IsGeneric = true;
+                Typeargs = typeargs;
+            }
         }
 
         public string GetMangledName()

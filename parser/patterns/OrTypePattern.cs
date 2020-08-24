@@ -5,6 +5,7 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
+    [Serializable]
     public class OrTypePattern : Pattern
     {
         public string VariantName { get; }

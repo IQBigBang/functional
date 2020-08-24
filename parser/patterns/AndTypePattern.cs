@@ -5,6 +5,7 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
+    [Serializable]
     public class AndTypePattern : Pattern
     {
         public Pattern[] Members { get; }

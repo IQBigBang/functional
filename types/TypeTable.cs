@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Functional.debug;
+using Functional.engines;
 
 namespace Functional.types
 {
@@ -27,6 +28,13 @@ namespace Functional.types
                 return type;
             // TODO line count print
             ErrorReporter.Error("Type `{0}` does not exist", name);
+            return null;
+        }
+
+        public AstType TryGet(string name)
+        {
+            if (table.TryGetValue(name, out AstType type))
+                return type;
             return null;
         }
 

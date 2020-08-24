@@ -4,6 +4,7 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
+    [Serializable]
     public class BindPattern : Pattern
     {
         public string bindname { get; }

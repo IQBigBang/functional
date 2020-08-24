@@ -25,25 +25,32 @@ namespace Functional.parser
             typeTable = tt;
         }
 
-        // program
+        // program - returns (functions, generic_functions, type_definitions)
 
-        public new(List<FunctionNode>, List<TypeDefinitionNode>) VisitProgram([NotNull] functionalParser.ProgramContext context)
+        public new(List<FunctionNode>, List<FunctionNode>, List<TypeDefinitionNode>) VisitProgram([NotNull] functionalParser.ProgramContext context)
         {
             var funcs = new List<FunctionNode>();
+            var genericfuncs = new List<FunctionNode>();
             var aliases = new List<TypeDefinitionNode>();
 
             foreach (var d in context.definition())
             {
                 var def = Visit(d);
-                if (def is null) continue;
-                else if (def is FunctionNode fdef) funcs.Add(fdef);
+                if (def is null) continue; // Maat directives
+                else if (def is FunctionNode fdef)
+                {
+                    if (fdef.IsGeneric)
+                        genericfuncs.Add(fdef);
+                    else
+                        funcs.Add(fdef);
+                }
                 else if (def is TypeDefinitionNode tdef)
                 {
                     aliases.Add(tdef);
                     typeTable.Insert(tdef.Name, tdef.ActualType, tdef.FileAndLine);
                 }
             }
-            return (funcs, aliases);
+            return (funcs, genericfuncs, aliases);
         }
 
         // definition - returns a Node (FunctionNode or TypeDefinitionNode or null)
@@ -58,28 +65,31 @@ namespace Functional.parser
 
         public override object VisitExternalFunctionDefinition([NotNull] functionalParser.ExternalFunctionDefinitionContext context)
         {
-            var predicate = ((string, Ty))Visit(context.predicate());
+            var predicate = ((string, string[], Ty))Visit(context.predicate());
+
+            if (predicate.Item2.Length != 0)
+                ErrorReporter.ErrorFL("An external function cannot be generic", FileAndLine(context));
 
             FunctionType functionPredicate;
-            if (predicate.Item2.Type.Is<FunctionType>())
-                functionPredicate = predicate.Item2.Type.As<FunctionType>();
+            if (predicate.Item3.Type.Is<FunctionType>())
+                functionPredicate = predicate.Item3.Type.As<FunctionType>();
             else
                 // If the predicate is not a function type make it into one (e.g. main :: Int)
-                functionPredicate = new FunctionType(new Ty[] { predicate.Item2 });
+                functionPredicate = new FunctionType(new Ty[] { predicate.Item3 });
                 
             return new FunctionNode(predicate.Item1, functionPredicate, FileAndLine(context));
         }
 
         public override object VisitFunctionDefinition([NotNull] functionalParser.FunctionDefinitionContext context)
         {
-            var predicate = ((string, Ty))Visit(context.predicate());
+            var predicate = ((string, string[], Ty))Visit(context.predicate());
 
             FunctionType functionPredicate;
-            if (predicate.Item2.Type.Is<FunctionType>())
-                functionPredicate = predicate.Item2.Type.As<FunctionType>();
+            if (predicate.Item3.Type.Is<FunctionType>())
+                functionPredicate = predicate.Item3.Type.As<FunctionType>();
             else
                 // If the predicate is not a function type make it into one (e.g. main :: Int)
-                functionPredicate = new FunctionType(new Ty[] { predicate.Item2 });
+                functionPredicate = new FunctionType(new Ty[] { predicate.Item3 });
 
             var overloads = context.stmt().Select(
                 (obj) => ((string, Pattern[], Node, WhereClauseNode))Visit(obj)).ToArray();
@@ -92,6 +102,7 @@ namespace Functional.parser
                 predicate.Item1,
                 overloads.Select((obj) => (obj.Item2, obj.Item3, obj.Item4)).ToArray(),
                 functionPredicate,
+                predicate.Item2,
                 FileAndLine(context)
             );
         }
@@ -101,12 +112,12 @@ namespace Functional.parser
             return new TypeDefinitionNode(context.ID().GetText(), (AstType)Visit(context.definitiontypename()), FileAndLine(context));
         }
 
-        // predicate - returns a tuple (string FuncName, Ty predicate)
+        // predicate - returns a tuple (string FuncName, string[] typeargs, Ty predicate)
 
         public override object VisitPredicate([NotNull] functionalParser.PredicateContext context)
         {
             Ty type = (Ty)Visit(context.anontypename());
-            return (context.ID().GetText(), type);
+            return (context.ID(0).GetText(), context.ID().Skip(1).Select((x) => x.GetText()).ToArray(), type);
         }
 
         // anontypename - returns Ty
@@ -271,6 +282,12 @@ namespace Functional.parser
 
         public override object VisitNilAtom([NotNull] functionalParser.NilAtomContext context)
             => new ConstantNode(FileAndLine(context), ref typeTable);
+
+        public override object VisitTrueAtom([NotNull] functionalParser.TrueAtomContext context)
+            => new ConstantNode(true, FileAndLine(context), ref typeTable);
+
+        public override object VisitFalseAtom([NotNull] functionalParser.FalseAtomContext context)
+            => new ConstantNode(false, FileAndLine(context), ref typeTable);
 
         public override object VisitListAtom([NotNull] functionalParser.ListAtomContext context)
         {

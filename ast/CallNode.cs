@@ -4,6 +4,7 @@ using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public class CallNode : Node
     {
         public Node Callee { get; }

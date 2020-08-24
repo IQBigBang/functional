@@ -4,6 +4,7 @@ using Functional.types;
 
 namespace Functional.parser.patterns
 {
+    [Serializable]
     public class ConstIntPattern : Pattern
     {
         public int value { get; }
