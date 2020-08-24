@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Functional.ast;
 using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    public interface Pattern
+    public interface Pattern : IDeepCloneable<Pattern>
     {
         /// <summary>
         /// Compile the pattern.

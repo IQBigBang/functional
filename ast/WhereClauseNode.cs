@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Functional.parser.patterns;
 using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class WhereClauseNode : Node
     {
         public (Pattern, Node)[] Bindings { get; }
@@ -24,5 +24,9 @@ namespace Functional.ast
         {
             return visitor.VisitWhereClause(this);
         }
+
+        public override Node Clone() => new WhereClauseNode(
+            Bindings.Select(x => x.Clone()).ToArray(),
+            FileAndLine);
     }
 }

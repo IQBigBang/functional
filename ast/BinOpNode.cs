@@ -4,7 +4,6 @@ using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class BinOpNode : Node
     {
         public Node Lhs { get; }
@@ -27,5 +26,7 @@ namespace Functional.ast
         {
             return visitor.VisitBinOp(this);
         }
+
+        public override Node Clone() => new BinOpNode(Lhs.Clone(), Op, Rhs.Clone(), FileAndLine);
     }
 }

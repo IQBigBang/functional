@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class CallNode : Node
     {
         public Node Callee { get; }
@@ -25,5 +25,7 @@ namespace Functional.ast
         {
             return visitor.VisitCall(this);
         }
+
+        public override Node Clone() => new CallNode(Callee.Clone(), Args.DeepClone(), FileAndLine);
     }
 }

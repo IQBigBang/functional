@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Functional.ast;
 using Functional.types;
 
 namespace Functional.parser.patterns
 {
-    [Serializable]
     public class AndTypePattern : Pattern
     {
         public Pattern[] Members { get; }
@@ -52,5 +52,7 @@ namespace Functional.parser.patterns
             for (int i = 0; i < Members.Length; i++)
                 Members[i].GetBindings(ref bindings, baseName + "->_" + i);
         }
+
+        public Pattern Clone() => new AndTypePattern(Members.DeepClone());
     }
 }

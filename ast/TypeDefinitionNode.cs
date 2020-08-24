@@ -4,7 +4,6 @@ using Functional.types;
 
 namespace Functional.ast
 {
-    [Serializable]
     public class TypeDefinitionNode : Node
     {
         public string Name { get; }
@@ -24,6 +23,8 @@ namespace Functional.ast
         public override T Accept<T>(AstVisitor<T> visitor)
         {
             return visitor.VisitTypeDefinition(this);
-        } 
+        }
+
+        public override Node Clone() => throw new NotImplementedException(); // TODO: type generics
     }
 }
