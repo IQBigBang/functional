@@ -7,8 +7,8 @@ namespace Functional.ast
 {
     public class CallNode : Node
     {
-        public Node Callee { get; }
-        public Node[] Args { get; }
+        public readonly Node Callee;
+        public readonly Node[] Args;
 
         public CallNode(Node callee, Node[] args, string fileAndLine) : base(fileAndLine)
         {

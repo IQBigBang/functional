@@ -8,27 +8,27 @@ namespace Functional.parser.patterns
     public class ListPattern : Pattern
     {
         // If true, the pattern matches against empty list (`[]`)
-        public bool isEmpty { get; }
+        public readonly bool IsEmpty;
 
         // In form (x:y:z:rest), x, y and z are elementpatterns, rest is tailpattern
-        public Pattern[] ElementPatterns;
-        public Pattern TailPattern;
+        public readonly Pattern[] ElementPatterns;
+        public readonly Pattern TailPattern;
 
         public ListPattern()
         {
-            isEmpty = true;
+            IsEmpty = true;
         }
 
         public ListPattern(Pattern[] Subpatterns)
         {
-            isEmpty = false;
+            IsEmpty = false;
             ElementPatterns = Subpatterns.Take(Subpatterns.Length - 1).ToArray();
             TailPattern = Subpatterns.Last();
         }
 
         public string CompileTest(string baseName)
         {
-            if (isEmpty) return "list_is_empty(" + baseName + ")";
+            if (IsEmpty) return "list_is_empty(" + baseName + ")";
 
             var ElementTests = string.Join(" && ", ElementPatterns
                 .Select((x, i) => x.CompileTest("list_at(" + baseName + ", " + i + ")")));
@@ -42,7 +42,7 @@ namespace Functional.parser.patterns
             if (!type.Type.Is<ListType>()) return false;
             ListType ltype = type.Type.As<ListType>();
 
-            if (isEmpty) return true;
+            if (IsEmpty) return true;
 
             return ElementPatterns
                 .Select((x) => x.MatchesType(ltype.ListElementsType))
@@ -52,7 +52,7 @@ namespace Functional.parser.patterns
 
         public void SetType(Ty type) 
         {
-            if (isEmpty) return;
+            if (IsEmpty) return;
 
             for (int i = 0; i < ElementPatterns.Length; i++)
                 ElementPatterns[i].SetType(type.Type.As<ListType>().ListElementsType);
@@ -61,7 +61,7 @@ namespace Functional.parser.patterns
 
         public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
-            if (isEmpty) return;
+            if (IsEmpty) return;
             foreach (var patt in ElementPatterns)
                 patt.GetBindingsTypes(ref bindings);
             TailPattern.GetBindingsTypes(ref bindings);
@@ -69,7 +69,7 @@ namespace Functional.parser.patterns
 
         public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
         {
-            if (isEmpty) return;
+            if (IsEmpty) return;
 
             ElementPatterns[0].GetBindings(ref bindings, "list_head(" + baseName + ")");
             for (int i = 1; i < ElementPatterns.Length; i++)
@@ -84,7 +84,7 @@ namespace Functional.parser.patterns
 
         public Pattern Clone()
         {
-            if (isEmpty) return new ListPattern();
+            if (IsEmpty) return new ListPattern();
             return new ListPattern(ElementPatterns.Append(TailPattern).Select(x => x.Clone()).ToArray());
         }
     }

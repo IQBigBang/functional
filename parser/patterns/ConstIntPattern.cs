@@ -6,11 +6,11 @@ namespace Functional.parser.patterns
 {
     public class ConstIntPattern : Pattern
     {
-        public int value { get; }
+        public readonly int Value;
 
         public ConstIntPattern(int constval)
         {
-            this.value = constval;
+            Value = constval;
         }
 
         // matches only against integers
@@ -19,7 +19,7 @@ namespace Functional.parser.patterns
         public void SetType(Ty type) { }
 
         public string CompileTest(string baseName)
-            => baseName + " == " + value;
+            => baseName + " == " + Value;
 
         public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
@@ -29,6 +29,6 @@ namespace Functional.parser.patterns
         {
         }
 
-        public Pattern Clone() => new ConstIntPattern(value);
+        public Pattern Clone() => new ConstIntPattern(Value);
     }
 }

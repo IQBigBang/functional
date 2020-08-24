@@ -6,9 +6,9 @@ namespace Functional.ast
 {
     public class ListNode : Node
     {
-        public Node[] Elements { get; }
+        public readonly Node[] Elements;
         // Warning: TypeHint may be null
-        public Ty TypeHint { get; }
+        public readonly Ty TypeHint;
 
         public ListNode(Node[] elements, Ty typeHint, string fileAndLine) : base(fileAndLine)
         {

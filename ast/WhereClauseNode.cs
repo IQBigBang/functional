@@ -8,7 +8,7 @@ namespace Functional.ast
 {
     public class WhereClauseNode : Node
     {
-        public (Pattern, Node)[] Bindings { get; }
+        public readonly (Pattern, Node)[] Bindings;
 
         public WhereClauseNode((Pattern, Node)[] bindings, string fileAndLine) : base(fileAndLine)
         {

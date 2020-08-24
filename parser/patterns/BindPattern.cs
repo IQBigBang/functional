@@ -6,12 +6,12 @@ namespace Functional.parser.patterns
 {
     public class BindPattern : Pattern
     {
-        public string bindname { get; }
+        public readonly string BindName;
         private Ty patternType;
 
         public BindPattern(string bindname)
         {
-            this.bindname = bindname;
+            BindName = bindname;
         }
 
         // matches any type
@@ -26,14 +26,14 @@ namespace Functional.parser.patterns
 
         public void GetBindingsTypes(ref Dictionary<string, Ty> bindings)
         {
-            bindings.Add(bindname, patternType);
+            bindings.Add(BindName, patternType);
         }
 
         public void GetBindings(ref Dictionary<string, string> bindings, string baseName)
         {
-            bindings.Add(bindname, baseName);
+            bindings.Add(BindName, baseName);
         }
 
-        public Pattern Clone() => new BindPattern(bindname);
+        public Pattern Clone() => new BindPattern(BindName);
     }
 }

@@ -6,9 +6,9 @@ namespace Functional.ast
 {
     public class BinOpNode : Node
     {
-        public Node Lhs { get; }
-        public string Op { get; } // +, -, *
-        public Node Rhs { get; }
+        public readonly Node Lhs;
+        public readonly string Op; // +, -, *
+        public readonly Node Rhs;
 
         public BinOpNode(Node lhs, string op, Node rhs, string fileAndLine) : base(fileAndLine)
         {
