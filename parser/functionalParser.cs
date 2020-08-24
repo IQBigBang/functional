@@ -39,7 +39,8 @@ public partial class functionalParser : Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		T__9=10, T__10=11, WS=12, INT=13, ID=14, STR=15, UNTERMINATEDSTR=16, PLUS=17, 
 		MINUS=18, TIMES=19, LPAREN=20, RPAREN=21, EQUALS=22, DBLCOLON=23, ARROW=24, 
-		AND=25, OR=26, LBRACK=27, RBRACK=28, COMMA=29, JOIN=30, DOT=31, NL=32;
+		AND=25, OR=26, LBRACK=27, RBRACK=28, COMMA=29, JOIN=30, DOT=31, NL=32, 
+		COMMENT=33;
 	public const int
 		RULE_program = 0, RULE_definition = 1, RULE_predicate = 2, RULE_anontypename = 3, 
 		RULE_simpleanontypename = 4, RULE_definitiontypename = 5, RULE_definitionsimpletypename = 6, 
@@ -61,7 +62,7 @@ public partial class functionalParser : Parser {
 		null, null, null, null, null, null, null, null, null, null, null, null, 
 		"WS", "INT", "ID", "STR", "UNTERMINATEDSTR", "PLUS", "MINUS", "TIMES", 
 		"LPAREN", "RPAREN", "EQUALS", "DBLCOLON", "ARROW", "AND", "OR", "LBRACK", 
-		"RBRACK", "COMMA", "JOIN", "DOT", "NL"
+		"RBRACK", "COMMA", "JOIN", "DOT", "NL", "COMMENT"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -2124,7 +2125,7 @@ public partial class functionalParser : Parser {
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '\"', '\x141', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', '#', '\x141', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x4', '\b', '\t', '\b', 
 		'\x4', '\t', '\t', '\t', '\x4', '\n', '\t', '\n', '\x4', '\v', '\t', '\v', 

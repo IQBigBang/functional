@@ -30,6 +30,7 @@ COMMA=29
 JOIN=30
 DOT=31
 NL=32
+COMMENT=33
 'module'=1
 'import'=2
 'include'=3
