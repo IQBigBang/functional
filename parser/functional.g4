@@ -24,6 +24,8 @@ JOIN: ':';
 DOT: '.';
 NL: ('\r\n'|'\n')+;
 
+COMMENT: '//' ~[\r\n]* ('\n'|'\r\n')* -> skip;
+
 
 program
     : NL? definition* EOF
