@@ -9,17 +9,17 @@ namespace Functional.ast
 {
     public class FunctionNode : Node
     {
-        public string Name { get; }
+        public readonly string Name;
 
-        public bool IsExternal { get; }
+        public readonly bool IsExternal;
         // If function is external, this is null
-        public (Pattern[], Node, WhereClauseNode)[] Overloads { get; }
+        public readonly (Pattern[], Node, WhereClauseNode)[] Overloads;
 
-        public bool IsGeneric { get; }
+        public readonly bool IsGeneric;
         // If function is not generic, this is null
-        public string[] Typeargs { get; }
+        public readonly string[] Typeargs;
 
-        public FunctionType Predicate;
+        public readonly FunctionType Predicate;
 
         public FunctionNode(string name, FunctionType predicate, string fileAndLine) : base(fileAndLine)
         {

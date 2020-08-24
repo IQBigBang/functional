@@ -7,8 +7,8 @@ namespace Functional.parser.patterns
 {
     public class OrTypePattern : Pattern
     {
-        public string VariantName { get; }
-        public Pattern InnerValue { get; }
+        public readonly string VariantName;
+        public readonly Pattern InnerValue;
         private OrType patType;
 
         public OrTypePattern(string variantName, Pattern innerValue)

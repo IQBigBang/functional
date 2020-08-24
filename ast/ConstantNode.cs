@@ -5,7 +5,7 @@ namespace Functional.ast
 {
     public class ConstantNode : Node
     {
-        public dynamic Value { get; }
+        public readonly dynamic Value;
 
         public ConstantNode(int value, string fileAndLine, ref TypeTable tt) : base(fileAndLine)
         {

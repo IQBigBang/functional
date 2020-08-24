@@ -6,8 +6,8 @@ namespace Functional.ast
 {
     public class TypeDefinitionNode : Node
     {
-        public string Name { get; }
-        public AstType ActualType { get; }
+        public readonly string Name;
+        public readonly AstType ActualType;
 
         public TypeDefinitionNode(string name, AstType actual, string fileAndLine) : base(fileAndLine)
         {

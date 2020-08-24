@@ -8,7 +8,7 @@ namespace Functional.parser.patterns
 {
     public class AndTypePattern : Pattern
     {
-        public Pattern[] Members { get; }
+        public readonly Pattern[] Members;
         private AndType patType;
 
         public AndTypePattern(Pattern[] members)

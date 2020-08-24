@@ -8,15 +8,18 @@ namespace Functional.ast
     {
         /// <summary>
         /// The name of the variable.
-        /// If the variable is a global function, the TypeChecker
-        /// changes the name to a mangled name!
+        ///
+        /// Name is not readonly (like other fields), because the type-checker might change it.
+        /// Therefore be careful when using this property;
         /// </summary>
         public string Name;
-        // Warning: TypeHint may be null
+        /// Warning: TypeHint may be null
+        /// TypeHint is not readonly (like other fields), because the type-checker might insert a type-hint.
+        /// Therefore be careful when using this property
         public Ty TypeHint;
         // Because the TypeChecker might alter the type hint
         // it is useful to know whether the user supplied a type hint or not
-        public bool UserSuppliedTypeHint;
+        public readonly bool UserSuppliedTypeHint;
 
         public VarNode(string name, Ty typeHint, string fileAndLine) : base(fileAndLine)
         {
