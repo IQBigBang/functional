@@ -345,6 +345,20 @@ public interface IfunctionalVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitNilAtom([NotNull] functionalParser.NilAtomContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>TrueAtom</c>
+	/// labeled alternative in <see cref="functionalParser.atom"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTrueAtom([NotNull] functionalParser.TrueAtomContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>FalseAtom</c>
+	/// labeled alternative in <see cref="functionalParser.atom"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFalseAtom([NotNull] functionalParser.FalseAtomContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>ParenAtom</c>
 	/// labeled alternative in <see cref="functionalParser.atom"/>.
 	/// </summary>

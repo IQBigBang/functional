@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using Functional.ast;
 using Functional.debug;
 using Functional.parser.patterns;
@@ -14,7 +16,7 @@ namespace Functional.engines
         /// Contains all global functions (not modified by FunctionNode)
         /// in format (name, function-type)
         /// </summary>
-        private List<(string, FunctionType)> GlobalFunctions;
+        public List<(string, FunctionType)> GlobalFunctions { get; private set; }
 
         /// <summary>
         /// Contains current function symbols (set by FunctionNode)
@@ -26,23 +28,46 @@ namespace Functional.engines
         /// </summary>
         private TypeTable TypeTable;
 
-        public void CheckAll((List<FunctionNode>, List<TypeDefinitionNode>) definitions, ref TypeTable typeTable)
+        /// <summary>
+        /// A list of all global generic functions
+        /// </summary>
+        private List<FunctionNode> GenericFunctions;
+
+        /// <summary>
+        /// A list of all functions created by monomorphization
+        /// </summary>
+        private List<FunctionNode> NewMonomorphizedFunctions;
+
+        /// <summary>
+        /// Checks all nodes.
+        /// This might introduce new monomorphized generic functions,
+        /// so this function returns a new list of all functions
+        /// </summary>
+        /// <param name="definitions">Definitions.</param>
+        /// <param name="typeTable">Type table.</param>
+        public List<FunctionNode> CheckAll((List<FunctionNode>, List<FunctionNode>, List<TypeDefinitionNode>) definitions, ref TypeTable typeTable)
         {
             GlobalFunctions = new List<(string, FunctionType)>();
+            NewMonomorphizedFunctions = new List<FunctionNode>();
             CurrentFunctionSymbols = new Dictionary<string, Ty>();
             TypeTable = typeTable;
 
-            foreach (var def in definitions.Item2)
+            foreach (var def in definitions.Item3)
             {
                 VisitTypeDefinition(def);
             }
 
+            GenericFunctions = definitions.Item2;
+            
             foreach (var f in definitions.Item1)
             {
                 GlobalFunctions.Add((f.Name, f.Predicate));
             }
 
             definitions.Item1.ForEach((f) => Visit(f));
+
+            NewMonomorphizedFunctions.AddRange(definitions.Item1);
+            return NewMonomorphizedFunctions;
         }
 
         public override void VisitBinOp(BinOpNode node)
@@ -247,19 +272,20 @@ namespace Functional.engines
                 return;
             }
 
+            // convert hints with just one type (like itoa :: Int) to function-type
+            FunctionType hint;
+            if (node.TypeHint is null) hint = null;
+            else if (!node.TypeHint.Type.Is<FunctionType>())
+                hint = new FunctionType(new Ty[] { node.TypeHint });
+            else
+                hint = node.TypeHint.Type.As<FunctionType>();
+
             var ViableFunctions =
                 GlobalFunctions.Where((x) => x.Item1 == node.Name);
             if (ViableFunctions.Any())
             {
                 if (node.TypeHint is null)
                     node.ReportError("The function `{0}` requires a type-hint", node.Name);
-
-                FunctionType hint;
-                // convert hints with just one type to function-type 
-                if (!node.TypeHint.Type.Is<FunctionType>())
-                    hint = new FunctionType(new Ty[] { node.TypeHint });
-                else
-                    hint = node.TypeHint.Type.As<FunctionType>();
 
                 var MatchedFunctions = ViableFunctions.Where((func) =>
                 {
@@ -272,18 +298,29 @@ namespace Functional.engines
                     return okay;
                 }).ToList();
 
-                if (MatchedFunctions.Count == 0)
-                    node.ReportError("No viable function {0} of type {1}", node.Name, hint);
                 if (MatchedFunctions.Count > 1)
                     node.ReportError("Multiple alternatives for function {0} of type {1}", node.Name, hint);
 
-                // If there is only one function left, we found the right one
-                node.NodeType = new Ty(MatchedFunctions[0].Item2, ref TypeTable);
-                node.Name = MatchedFunctions[0].Item2.GetNamedFunctionMangledName(node.Name);
-                return;
+                if (MatchedFunctions.Count == 1)
+                {
+                    // If there is only one function left, we found the right one
+                    node.NodeType = new Ty(MatchedFunctions[0].Item2, ref TypeTable);
+                    node.Name = MatchedFunctions[0].Item2.GetNamedFunctionMangledName(node.Name);
+                    return;
+                }
             }
 
-            node.ReportError("Undefined variable `{0}`", node.Name);
+            if (node.TypeHint is null)
+                node.ReportError("The variable `{0}` requires a type-hint", node.Name);
+                
+            // If there are no alternatives, look in generic functions
+            var generic = TryMonomorphizeGenericFunction(node.Name, hint, node.FileAndLine);
+            if (generic is null)
+                node.ReportError("Undefined variable `{0}`", node.Name);
+
+            node.NodeType = new Ty(generic.Predicate, ref TypeTable);
+            node.Name = generic.GetMangledName();
+            return;
         }
 
         public override void VisitWhereClause(WhereClauseNode node)
@@ -301,6 +338,84 @@ namespace Functional.engines
 
                 // Then add bindings
                 patt.GetBindingsTypes(ref CurrentFunctionSymbols);
+            }
+        }
+
+        /// <summary>
+        /// Tries to find and monomorphize a generic function
+        /// </summary>
+        /// <param name="name">The name of the function</param>
+        /// <param name="type">The function type except for the return type</param>
+        /// <returns>If a valid generic function was found, returns the monomorphized version. Otherwise returns null</returns>
+        public FunctionNode TryMonomorphizeGenericFunction(string name, FunctionType type, string FileAndLine)
+        {
+            // For each function, try if it is a valid candidate
+            Console.WriteLine("Asking for generic function named {0}", name);
+            var ValidFunctions = new List<(FunctionNode, Dictionary<string, Ty>)>();
+
+            foreach (var x in GenericFunctions)
+            {
+                // different name = not possible
+                if (x.Name != name) continue;
+                // different argcount = not possible
+                if (x.Predicate.InnerTypes.Length != type.InnerTypes.Length + 1) continue;
+
+                var TypeArgs = new Dictionary<string, Ty>();
+
+                for (int i = 0; i < type.InnerTypes.Length; i++)
+                {
+                    if (!x.Predicate.InnerTypes[i].TryMonomorphize(type.InnerTypes[i], ref TypeArgs, x.Typeargs))
+                        continue;
+                }
+                // If we get here the function is a valid candidate for monomorphization
+                Console.WriteLine("Found a valid candidate");
+                ValidFunctions.Add((x, TypeArgs));
+            }
+
+            if (ValidFunctions.Count > 1)
+                ErrorReporter.ErrorFL("Multiple generic variants for function {0}", FileAndLine, name);
+
+            if (ValidFunctions.Count == 0) // return false - no possible candidate
+                return null;
+
+            // Now we have only one valid option, so actually monomorphize it
+            var MonomorphizedPredicate = (FunctionType)
+                ValidFunctions[0].Item1.Predicate.Monomorphize(ValidFunctions[0].Item2);
+
+            Console.WriteLine("Monomorphized the candidate: {0}", MonomorphizedPredicate);
+
+            // Deep-copy the overloads - this prevents different monomorphized variants from affecting each other
+            // TODO Somehow get rid of this slow copying
+            // And generate the function
+            var MonomorphizedFunction = new FunctionNode(
+                ValidFunctions[0].Item1.Name,
+                DeepClone(ValidFunctions[0].Item1.Overloads),
+                MonomorphizedPredicate,
+                null,
+                ValidFunctions[0].Item1.FileAndLine
+            );
+
+            GlobalFunctions.Add((MonomorphizedFunction.Name, MonomorphizedPredicate));
+
+            // Save the CurrentFunctionSymbols and then restore them
+            var Backup = CurrentFunctionSymbols.ToDictionary((x) => x.Key, (x) => x.Value);
+            VisitFunction(MonomorphizedFunction);
+            CurrentFunctionSymbols = Backup;
+
+            NewMonomorphizedFunctions.Add(MonomorphizedFunction);
+
+            return MonomorphizedFunction;
+        }
+
+        private static T DeepClone<T>(T obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, obj);
+                ms.Position = 0;
+
+                return (T)formatter.Deserialize(ms);
             }
         }
     }

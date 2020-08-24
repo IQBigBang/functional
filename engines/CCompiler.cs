@@ -70,7 +70,7 @@ namespace Functional.engines
             if (node.NodeType.Type.Is<IntType>())
                 return string.Format("{0}", (int)node.Value);
             if (node.NodeType.Type.Is<BoolType>())
-                return string.Format("{0}", (bool)node.Value);
+                return (bool)node.Value ? "true" : "false";
             if (node.NodeType.Type.Is<NilType>())
                 return "nil";
             if (node.NodeType.Type.Is<StringType>())

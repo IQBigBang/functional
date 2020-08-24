@@ -37,23 +37,27 @@ namespace Functional
 
         public static void Evaluate(CmdArgs args)
         {
-            //ErrorReporter.ThrowExceptions = true;
+            ErrorReporter.ThrowExceptions = true;
             ErrorReporter.Init();
 
             // All the files are processed together
             var AllFunctions = new List<FunctionNode>();
+            var AllGenericFunctions = new List<FunctionNode>();
             var AllTypes = new List<TypeDefinitionNode>();
 
             var GlobalTypeTable = new TypeTable();
 
             foreach (var v in args.Files)
             {
-                var (fs, ts) = BuildAST(Parse(v), ref GlobalTypeTable);
+                var (fs, genericfs, ts) = BuildAST(Parse(v), ref GlobalTypeTable);
                 AllFunctions.AddRange(fs);
+                AllGenericFunctions.AddRange(genericfs);
                 AllTypes.AddRange(ts);
             }
-            
-            TypeCheck((AllFunctions, AllTypes), ref GlobalTypeTable);
+
+            // Update allfunctions with potentially new functions
+            AllFunctions = 
+            TypeCheck((AllFunctions, AllGenericFunctions, AllTypes), ref GlobalTypeTable);
             
             Optimize(AllFunctions);
 
@@ -97,15 +101,21 @@ namespace Functional
             return new functionalParser(commonTokenStream);
         }
 
-        public static (List<FunctionNode>, List<TypeDefinitionNode>) BuildAST(functionalParser p, ref TypeTable tt)
+        public static (List<FunctionNode>, List<FunctionNode>, List<TypeDefinitionNode>) BuildAST(functionalParser p, ref TypeTable tt)
         {
             functionalBaseVisitorImpl visitor = new functionalBaseVisitorImpl("main.f", ref tt);
             return visitor.VisitProgram(p.program());
         }
 
-        public static void TypeCheck((List<FunctionNode>, List<TypeDefinitionNode>) definitions, ref TypeTable tt)
+        /// <summary>
+        /// The type-checker among other things resolves generic functions
+        /// Therefore it takes a tuple (functions, genericfunctions, types)
+        /// and returns just all functions including new ones
+        /// </summary>
+        public static List<FunctionNode> TypeCheck((List<FunctionNode>, List<FunctionNode>, List<TypeDefinitionNode>) definitions, ref TypeTable tt)
         {
-            new TypeChecker().CheckAll(definitions, ref tt);
+            var tc = new TypeChecker();
+            return tc.CheckAll(definitions, ref tt);
         }
 
         public static void Optimize(List<FunctionNode> functions)

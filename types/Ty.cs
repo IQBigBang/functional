@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Functional.engines;
 
 namespace Functional.types
 {
@@ -9,7 +11,10 @@ namespace Functional.types
     public class Ty
     {
         public string Name { get; }
+
         public AstType Type { get { return Tt.Get(Name); } }
+
+        public AstType MaybeType { get { return Tt.TryGet(Name); } }
 
         private TypeTable Tt;
 
@@ -44,7 +49,7 @@ namespace Functional.types
         /// <param name="tt">Tt.</param>
         // FileAndLine is passed as an empty string, because it is used to throw duplicite type definition error and that can't happen with auto-named types
         public Ty(AstType type, ref TypeTable tt) : this(type.GetMangledName(), type, ref tt, "")
-        {
+        { 
         }
 
         public string GetCName()
@@ -57,13 +62,48 @@ namespace Functional.types
 
         public string GetMangledName()
         {
+            if (MaybeType is null) return Name; // This is for generic types
             if (Type.Is<AndType>() || Type.Is<OrType>())
                 return Name;
             return Type.GetMangledName();
         }
 
+        /// <summary>
+        /// Checks if it is possible to monomorphize this type
+        /// </summary>
+        /// <returns><c>true</c>, if monomorphize was tryed, <c>false</c> otherwise.</returns>
+        /// <param name="ExpectedType">The type that this type is supposed to be after monomorphization</param>
+        /// <param name="TypeArgs">A list of already resolved type arguments.</param>
+        /// <param name="ExpectedTypeArgs">A list of all the expected type arguments.</param>
+        public bool TryMonomorphize(Ty ExpectedType, ref Dictionary<string, Ty> TypeArgs, string[] ExpectedTypeArgs)
+        {
+            // if the type is already resolved, check for equality
+            if (TypeArgs.ContainsKey(this.Name))
+                return TypeArgs[this.Name] == ExpectedType;
+            // if it is expected to be resolved, do it
+            if (ExpectedTypeArgs.Contains(this.Name))
+            {
+                TypeArgs[this.Name] = ExpectedType;
+                return true;
+            }
+            // otherwise check the inner type
+            return this.Type.TryMonomorphize(ExpectedType.Type, ref TypeArgs, ExpectedTypeArgs);
+        }
+
+        /// <summary>
+        /// Actually monomorphizes the type. The returned type should not contain anything generic.
+        /// </summary>
+        /// <param name="TypeArgs">The resolved type arguments</param>
+        public Ty Monomorphize(Dictionary<string, Ty> TypeArgs)
+        {
+            if (TypeArgs.ContainsKey(this.Name))
+                return TypeArgs[this.Name];
+            return new Ty(this.Name, this.Type.Monomorphize(TypeArgs), ref Tt, "");
+        }
+
         public override string ToString()
         {
+            if (MaybeType is null) return Name; // This is for generic types
             if (Type.Is<AndType>() || Type.Is<OrType>())
                 return Name;
             return Type.ToString();

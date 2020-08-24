@@ -39,7 +39,7 @@ definition
     ;
     
 predicate
-    : ID DBLCOLON anontypename
+    : ID+ DBLCOLON anontypename
     ;
     
 anontypename
@@ -116,6 +116,8 @@ atom
     | ID (DBLCOLON anontypename)? # VarAtom
     | STR # StringAtom
     | 'nil' # NilAtom
+    | 'true' # TrueAtom
+    | 'false' # FalseAtom
     | LPAREN expr RPAREN # ParenAtom
     | LBRACK (expr COMMA)* expr? RBRACK (DBLCOLON anontypename)? # ListAtom
     ;

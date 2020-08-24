@@ -58,7 +58,7 @@ namespace Functional.debug
                 + Red + "error" + Reset + Bold + ": " 
                 + string.Format(format, args) + Reset);
             if (ThrowExceptions) throw new Exception();
-            //Environment.Exit(1);
+            Environment.Exit(1);
         }
 
         public static void WarningFL(string format, string FileAndLine, params object[] args)
@@ -83,7 +83,7 @@ namespace Functional.debug
                 Bold + Red + "error" + Reset + Bold + ": "
                 + string.Format(format, args) + Reset);
             if (ThrowExceptions) throw new Exception();
-            //Environment.Exit(1);
+            Environment.Exit(1);
         }
 
         public static void Warning(string format, params object[] args)

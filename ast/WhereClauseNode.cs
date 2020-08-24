@@ -5,6 +5,7 @@ using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public class WhereClauseNode : Node
     {
         public (Pattern, Node)[] Bindings { get; }

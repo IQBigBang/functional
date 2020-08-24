@@ -3,6 +3,7 @@ using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public class ConstantNode : Node
     {
         public dynamic Value { get; }

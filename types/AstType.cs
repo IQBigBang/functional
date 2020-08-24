@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace Functional.types
 {
+    [Serializable]
     public abstract class AstType
     { 
 
         public abstract string GetCName();
         public abstract string GetMangledName();
+        public abstract bool TryMonomorphize(AstType ExpectedType, ref Dictionary<string, Ty> TypeArgs, string[] ExpectedTypeArgs);
+        public abstract AstType Monomorphize(Dictionary<string, Ty> TypeArgs);
 
         // Historically, those methods are used instead of `is` and `as`
         // However right now they don't offer any special logic

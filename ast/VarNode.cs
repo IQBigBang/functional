@@ -4,6 +4,7 @@ using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public class VarNode : Node
     {
         /// <summary>

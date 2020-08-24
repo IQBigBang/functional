@@ -28,5 +28,21 @@ namespace Functional.types
         {
             return "(" + string.Join(" & ", Members.Select((x) => x.ToString())) + ")";
         }
+
+        public override bool TryMonomorphize(AstType ExpectedType, ref Dictionary<string, Ty> TypeArgs, string[] ExpectedTypeArgs)
+        {
+            if (!ExpectedType.Is<AndType>()) return false;
+            var atype = ExpectedType.As<AndType>();
+            if (atype.Members.Length != Members.Length) return false;
+            for (int i = 0; i < Members.Length; ++i)
+            {
+                if (!Members[i].TryMonomorphize(atype.Members[i], ref TypeArgs, ExpectedTypeArgs))
+                    return false;
+            }
+            return true;
+        }
+
+        public override AstType Monomorphize(Dictionary<string, Ty> TypeArgs)
+            => new AndType(Members.Select((x) => x.Monomorphize(TypeArgs)).ToArray());
     }
 }

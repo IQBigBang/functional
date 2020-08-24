@@ -43,10 +43,27 @@ namespace Functional.types
         {
             return string.Join(" -> ", InnerTypes.Select((x) => 
             {
+                if (x.MaybeType is null) return x.ToString(); // generic types
                 if (x.Type.Is<FunctionType>())
                     return "(" + x + ")";
                 return x.ToString();
             }));
         }
+
+        public override bool TryMonomorphize(AstType ExpectedType, ref Dictionary<string, Ty> TypeArgs, string[] ExpectedTypeArgs)
+        {
+            if (!ExpectedType.Is<FunctionType>()) return false;
+            var ftype = ExpectedType.As<FunctionType>();
+            if (ftype.InnerTypes.Length != InnerTypes.Length) return false;
+            for (int i = 0; i < InnerTypes.Length; ++i)
+            {
+                if (!InnerTypes[i].TryMonomorphize(ftype.InnerTypes[i], ref TypeArgs, ExpectedTypeArgs))
+                    return false;
+            }
+            return true;
+        }
+
+        public override AstType Monomorphize(Dictionary<string, Ty> TypeArgs)
+            => new FunctionType(InnerTypes.Select((x) => x.Monomorphize(TypeArgs)).ToArray());
     }
 }

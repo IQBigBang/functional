@@ -1,8 +1,10 @@
-﻿using Functional.debug;
+﻿using System;
+using Functional.debug;
 using Functional.types;
 
 namespace Functional.ast
 {
+    [Serializable]
     public abstract class Node
     {
         protected Node(string fileAndLine)
