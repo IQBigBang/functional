@@ -12,6 +12,8 @@ namespace Functional.types
     {
         public string Name { get; }
 
+        private bool IsAutoNamed;
+
         public AstType Type { get { return Tt.Get(Name); } }
 
         public AstType MaybeType { get { return Tt.TryGet(Name); } }
@@ -27,6 +29,7 @@ namespace Functional.types
         {
             Name = name;
             Tt = tt;
+            IsAutoNamed = false;
         }
 
         /// <summary>
@@ -39,6 +42,7 @@ namespace Functional.types
         {
             Name = name;
             Tt = tt;
+            IsAutoNamed = false;
             Tt.Insert(name, type, fileAndLine);
         }
 
@@ -49,7 +53,8 @@ namespace Functional.types
         /// <param name="tt">Tt.</param>
         // FileAndLine is passed as an empty string, because it is used to throw duplicite type definition error and that can't happen with auto-named types
         public Ty(AstType type, ref TypeTable tt) : this(type.GetMangledName(), type, ref tt, "")
-        { 
+        {
+            IsAutoNamed = true;
         }
 
         public string GetCName()
@@ -97,8 +102,14 @@ namespace Functional.types
         public Ty Monomorphize(Dictionary<string, Ty> TypeArgs)
         {
             if (TypeArgs.ContainsKey(this.Name))
+            {
+                Console.WriteLine("Substituting generic {0} for {1}", Name, TypeArgs[this.Name]);
                 return TypeArgs[this.Name];
-            return new Ty(this.Name, this.Type.Monomorphize(TypeArgs), ref Tt, "");
+            }
+            Console.WriteLine("Passing down monomorphization from {0}", Name);
+
+            if (IsAutoNamed) return new Ty(this.Type.Monomorphize(TypeArgs), ref Tt);
+            return new Ty(Name, Type.Monomorphize(TypeArgs), ref Tt, "");
         }
 
         public override string ToString()
