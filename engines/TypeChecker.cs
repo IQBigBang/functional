@@ -389,7 +389,7 @@ namespace Functional.engines
             // And generate the function
             var MonomorphizedFunction = new FunctionNode(
                 ValidFunctions[0].Item1.Name,
-                ValidFunctions[0].Item1.Overloads.Select(x => (x.Item1.DeepClone(), x.Item2.Clone(), (WhereClauseNode)x.Item3.Clone())).ToArray(),
+                ValidFunctions[0].Item1.Overloads.Select(x => (x.Item1.DeepClone(), x.Item2.Clone(), (WhereClauseNode)x.Item3?.Clone())).ToArray(),
                 MonomorphizedPredicate,
                 null,
                 ValidFunctions[0].Item1.FileAndLine
