@@ -37,7 +37,9 @@ namespace Functional
 
         public static void Evaluate(CmdArgs args)
         {
+#if DEBUG
             ErrorReporter.ThrowExceptions = true;
+#endif
             ErrorReporter.Init();
 
             // All the files are processed together
