@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Functional.debug;
 using Functional.types;
 
@@ -17,7 +18,7 @@ namespace Functional.ast
         public readonly string FileAndLine;
         public abstract void Accept(AstVisitor visitor);
         public abstract T Accept<T>(AstVisitor<T> visitor);
-        public abstract Node Clone();
+        public abstract Node Clone(Dictionary<string, Ty> newTypes);
 
         public void ReportError(string format, params object[] args)
             => ErrorReporter.ErrorFL(format, FileAndLine, args);

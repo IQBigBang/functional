@@ -27,6 +27,6 @@ namespace Functional.ast
             return visitor.VisitBinOp(this);
         }
 
-        public override Node Clone() => new BinOpNode(Lhs.Clone(), Op, Rhs.Clone(), FileAndLine);
+        public override Node Clone(Dictionary<string, Ty> newTypes) => new BinOpNode(Lhs.Clone(newTypes), Op, Rhs.Clone(newTypes), FileAndLine);
     }
 }

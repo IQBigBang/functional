@@ -53,6 +53,6 @@ namespace Functional.parser.patterns
                 Members[i].GetBindings(ref bindings, baseName + "->_" + i);
         }
 
-        public Pattern Clone() => new AndTypePattern(Members.DeepClone());
+        public Pattern Clone(Dictionary<string, Ty> newTypes) => new AndTypePattern(Members.Map(x => x.Clone(newTypes)));
     }
 }

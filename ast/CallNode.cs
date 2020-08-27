@@ -26,6 +26,6 @@ namespace Functional.ast
             return visitor.VisitCall(this);
         }
 
-        public override Node Clone() => new CallNode(Callee.Clone(), Args.DeepClone(), FileAndLine);
+        public override Node Clone(Dictionary<string, Ty> newTypes) => new CallNode(Callee.Clone(newTypes), Args.Map(x => x.Clone(newTypes)), FileAndLine);
     }
 }

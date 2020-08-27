@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Functional.types;
 
 namespace Functional.ast
@@ -48,6 +49,6 @@ namespace Functional.ast
             return visitor.VisitConstant(this);
         }
 
-        public override Node Clone() => new ConstantNode(Value, NodeType, FileAndLine);
+        public override Node Clone(Dictionary<string, Ty> newTypes) => new ConstantNode(Value, NodeType, FileAndLine);
     }
 }

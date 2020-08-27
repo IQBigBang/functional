@@ -29,6 +29,6 @@ namespace Functional.parser.patterns
         {
         }
 
-        public Pattern Clone() => new ConstIntPattern(Value);
+        public Pattern Clone(Dictionary<string, Ty> newTypes) => new ConstIntPattern(Value);
     }
 }

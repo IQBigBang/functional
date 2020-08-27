@@ -25,8 +25,8 @@ namespace Functional.ast
             return visitor.VisitWhereClause(this);
         }
 
-        public override Node Clone() => new WhereClauseNode(
-            Bindings.Select(x => x.Clone()).ToArray(),
+        public override Node Clone(Dictionary<string, Ty> newTypes) => new WhereClauseNode(
+            Bindings.Map(x => (x.Item1.Clone(newTypes), x.Item2.Clone(newTypes))),
             FileAndLine);
     }
 }

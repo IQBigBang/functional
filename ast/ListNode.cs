@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Functional.types;
 
@@ -26,6 +27,6 @@ namespace Functional.ast
             return visitor.VisitListNode(this);
         }
 
-        public override Node Clone() => new ListNode(Elements.DeepClone(), TypeHint, FileAndLine);
+        public override Node Clone(Dictionary<string, Ty> newTypes) => new ListNode(Elements.Map(x => x.Clone(newTypes)), TypeHint?.Monomorphize(newTypes), FileAndLine);
     }
 }
