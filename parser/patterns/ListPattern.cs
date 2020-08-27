@@ -82,10 +82,10 @@ namespace Functional.parser.patterns
         }
 
 
-        public Pattern Clone()
+        public Pattern Clone(Dictionary<string, Ty> newTypes)
         {
             if (IsEmpty) return new ListPattern();
-            return new ListPattern(ElementPatterns.Append(TailPattern).Select(x => x.Clone()).ToArray());
+            return new ListPattern(ElementPatterns.Append(TailPattern).Select(x => x.Clone(newTypes)).ToArray());
         }
     }
 }

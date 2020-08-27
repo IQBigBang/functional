@@ -58,6 +58,6 @@ namespace Functional.ast
             return visitor.VisitFunction(this);
         }
 
-        public override Node Clone() => throw new Exception(); // function nodes should not be cloned on their own
+        public override Node Clone(Dictionary<string, Ty> newTypes) => throw new Exception(); // function nodes should not be cloned on their own
     }
 }

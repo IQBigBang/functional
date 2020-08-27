@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Functional.types;
 
@@ -38,6 +39,6 @@ namespace Functional.ast
             return visitor.VisitVar(this);
         }
 
-        public override Node Clone() => new VarNode(Name, TypeHint, FileAndLine);
+        public override Node Clone(Dictionary<string, Ty> newTypes) => new VarNode(Name, TypeHint?.Monomorphize(newTypes), FileAndLine);
     }
 }

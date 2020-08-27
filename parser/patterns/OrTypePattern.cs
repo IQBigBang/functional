@@ -51,6 +51,6 @@ namespace Functional.parser.patterns
             InnerValue.GetBindings(ref bindings, baseName + "->as." + VariantName);
         }
 
-        public Pattern Clone() => new OrTypePattern(VariantName, InnerValue);
+        public Pattern Clone(Dictionary<string, Ty> newTypes) => new OrTypePattern(VariantName, InnerValue.Clone(newTypes));
     }
 }

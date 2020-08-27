@@ -21,6 +21,6 @@ namespace Functional.parser.patterns
             => true;
 
         public void SetType(Ty type) { }
-        public Pattern Clone() => new DiscardPattern();
+        public Pattern Clone(Dictionary<string, Ty> newTypes) => new DiscardPattern();
     }
 }

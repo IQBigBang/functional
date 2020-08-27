@@ -25,6 +25,6 @@ namespace Functional.ast
             return visitor.VisitTypeDefinition(this);
         }
 
-        public override Node Clone() => throw new NotImplementedException(); // TODO: type generics
+        public override Node Clone(Dictionary<string, Ty> newTypes) => throw new NotImplementedException(); // TODO: type generics
     }
 }

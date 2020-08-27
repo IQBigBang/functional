@@ -34,6 +34,6 @@ namespace Functional.parser.patterns
             bindings.Add(BindName, baseName);
         }
 
-        public Pattern Clone() => new BindPattern(BindName);
+        public Pattern Clone(Dictionary<string, Ty> newTypes) => new BindPattern(BindName);
     }
 }
